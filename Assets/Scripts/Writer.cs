@@ -33,7 +33,10 @@ public class Writer : MyMonoBehaviour {
 		"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.",
 		"Be the change that you wish to see in the world.",
 		"A delayed game is eventually good, but a rushed game is forever bad.",
-		"Necessity is the mother of invention."
+		"Necessity is the mother of invention.",
+		"I would be the least among men with dreams and the desire to fulfil them, rather than the greatest with no dreams and no desires.",
+		"All men dream: but not equally. Those who dream by night in the dusty recesses of their minds wake in the day to find that it was vanity:" +
+			" but the dreamers of the day are dangerous men, for they may act their dreams with open eyes, to make it possible."
 	};
 
 	public GameObject FallingLetter;
@@ -64,7 +67,6 @@ public class Writer : MyMonoBehaviour {
 	}
 
 	void ResetGame() {
-		print(phraseIndex);
 		desiredWord = PhrasesShuffled[phraseIndex];
 		phraseIndex = (phraseIndex + 1) % PhrasesShuffled.Length;
 		finishTimerStarted = false;
@@ -87,6 +89,27 @@ public class Writer : MyMonoBehaviour {
 
 	void RegenMask() {
 		wordMask = new string(desiredWord.Select<char,char>(nonspaceToUnderscore).ToArray());
+	}
+
+	void RevealMatchingLetters(char c) {
+		char[] mask = wordMask.ToCharArray();
+
+		// REQUIRES: mask[index] == '_'
+
+		bool found = false;
+
+		for (int i = index; i < wordMask.Length; i++) {
+			if (mask[i] == '_' && char.ToLower(desiredWord[i]) == char.ToLower(c)) {
+				mask[i] = desiredWord[i];
+				found = true;
+				break;
+			}
+		}
+
+		wordMask = new string(mask);
+
+		SkipIndexToNextBlank();
+		Redraw();
 	}
 
 	void RevealLetters(int num) {
@@ -113,7 +136,7 @@ public class Writer : MyMonoBehaviour {
 			}
 
 			if (j == mask.Length) {
-				Debug.LogWarning("Hit end of letters! Looking for " + unrevealedIndex);	
+				Debug.LogWarning("Hit end of letters! Looking for " + indexToReveal + ", made it to " + unrevealedIndex);	
 			} else if (unrevealedIndex == indexToReveal)
 				mask[j] = desiredWord[j];
 		}
@@ -134,11 +157,9 @@ public class Writer : MyMonoBehaviour {
 	void Redraw() {
 		string prefix = desiredWord.Substring(0, index);
 
-		char[] newMaskArr = wordMask.ToCharArray();
-//		newMaskArr[index] = '█';
-		string newMask = new string(newMaskArr);
+		string newMask = wordMask;
 
-		string suffix = "<color=green>_</color>";
+		string suffix = "_";//"<color=green>_</color>";
 		if (index >= newMask.Length)
 			suffix = newMask.Substring(index);
 		else
@@ -178,6 +199,9 @@ public class Writer : MyMonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.LeftShift))
 			RevealLetters(5);
 
+		if (Input.GetKeyDown(KeyCode.RightShift))
+			Debug.Log(desiredWord);
+
 		if (Time.time > nextRevealTime) {
 			RevealLetters(1);
 			nextRevealTime = Time.time + RevealRate;
@@ -186,22 +210,27 @@ public class Writer : MyMonoBehaviour {
 
 		if (Input.inputString != "" && Input.anyKeyDown) {
 			foreach (char c in Input.inputString) {
+				if (!char.IsLetter(c))
+					continue;
+				
 				if (index >= desiredWord.Length) {
 					index = 0;
 					return;
 				}
-				
-				if (char.ToLower(c) == char.ToLower(desiredWord[index])) {
-					IncrementLetter();
-				} else {
-					incorrectKeysRemaining -= 1;
-					if (incorrectKeysRemaining <= 0) {
-						IncrementLetter();
-						ResetIncorrectKeys();
-					}
-				}
 
-				Redraw();
+				RevealMatchingLetters(c);
+				
+//				if (char.ToLower(c) == char.ToLower(desiredWord[index])) {
+//					IncrementLetter();
+//				} else {
+//					incorrectKeysRemaining -= 1;
+//					if (incorrectKeysRemaining <= 0) {
+//						IncrementLetter();
+//						ResetIncorrectKeys();
+//					}
+//				}
+//
+//				Redraw();
 			}
 
 
