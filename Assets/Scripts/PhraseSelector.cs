@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 public class PhraseSelector : Singleton<PhraseSelector> {
@@ -49,9 +50,43 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	string[] PhrasesShuffled;
 	int nextPhraseIndex = 0;
 
+	public int PhraseNumber {
+		get {
+			if (nextPhraseIndex == 0)
+				return PhrasesShuffled.Length;
+			return nextPhraseIndex;
+		}
+	}
+
+	public int PhraseCount {
+		get {
+			if (PhrasesShuffled == null)
+				return 0;
+			
+			return PhrasesShuffled.Length;
+		}
+	}
+
+	string[] PickPhrases() {
+		var result = new List<string>();
+
+		var phrasesSorted = Phrases.OrderBy(x => x.Length).ToArray();
+
+		for (int i = 0; i < phrasesSorted.Length; i += 2) {
+			if (Random.value > 0.5f || i >= Phrases.Length - 1) {
+				result.Add(phrasesSorted[i]);
+			} else
+				result.Add(phrasesSorted[i + 1]);
+		}
+
+		return result.ToArray();
+	}
+
 	// Use this for initialization
 	void Start () {
-		PhrasesShuffled = Phrases.AsRandom().ToArray();
+		PhrasesShuffled = PickPhrases();
+			//Phrases.OrderBy(x => x.Length).ToArray();
+//			AsRandom().ToArray();
 
 	}
 

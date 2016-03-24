@@ -6,6 +6,7 @@ public class Score : Singleton<Score> {
 
 	int score;
 	Text text;
+	int lastCount = -1;
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +15,11 @@ public class Score : Singleton<Score> {
 	}
 
 	void Redraw() {
-		text.text = "Score: " + score.ToString();
+		if (PhraseSelector.Instance.PhraseNumber == lastCount)
+			return;
+		
+		lastCount = PhraseSelector.Instance.PhraseNumber;
+		text.text = string.Format("Score: {0}\nPhrase {1} of {2}", score, PhraseSelector.Instance.PhraseNumber, PhraseSelector.Instance.PhraseCount);
 	}
 
 	public void Increment(int amount) {
@@ -24,6 +29,7 @@ public class Score : Singleton<Score> {
 	
 	// Update is called once per frame
 	void Update () {
+		Redraw();
 	
 	}
 }

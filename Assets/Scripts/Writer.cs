@@ -8,7 +8,7 @@ public class Writer : MyMonoBehaviour {
 	// Constants
 	const int MaxIncorrectKeysToGuess = 20;
 	const int MinIncorrectKeysToGuess = 10;
-	const float InitialHintsRatio = .2f;
+	const float InitialHintsRatio = .6f;
 	const float NextLevelChange = 1.0f;
 
 	public bool GlobalReplace;
@@ -101,6 +101,11 @@ public class Writer : MyMonoBehaviour {
 		int numUnrevealed = mask.Skip(index).Count(x => x == '_');
 		num = Mathf.Min(numUnrevealed, num);
 
+		if (index >= mask.Length) {
+			Debug.LogWarning("Cannot reveal letters, at end");
+			return;
+		}
+
 		// REQUIRES: mask[index] == '_'
 		if (mask[index] != '_')
 			Debug.LogWarning("Mask at " + index + " is not _, but " + mask[index]);
@@ -122,7 +127,7 @@ public class Writer : MyMonoBehaviour {
 			}
 
 			if (j == mask.Length) {
-				Debug.LogWarning("Hit end of letters! Looking for " + indexToReveal + ", made it to " + unrevealedIndex);	
+//				Debug.LogWarning("Hit end of letters! Looking for " + indexToReveal + ", made it to " + unrevealedIndex);	
 			} else if (unrevealedIndex == indexToReveal)
 				mask[j] = desiredWord[j];
 		}
@@ -183,7 +188,7 @@ public class Writer : MyMonoBehaviour {
 		if (stopped)
 			return;
 
-		if (index >= desiredWord.Length) {
+		if (index >= desiredWord.Length || finishTimerStarted) {
 			
 			if (finishTimerStarted) {
 				if (Time.time > finishTime) {
@@ -197,9 +202,9 @@ public class Writer : MyMonoBehaviour {
 				Score.Instance.Increment(500);
 				Countdown.Instance.AddBonusTime(Settings.Instance.BonusTime);
 			}
-		}
+		}			
 
-		if (Input.GetKeyDown(KeyCode.LeftShift))
+		if (Input.GetKeyDown(KeyCode.LeftShift)) 
 			RevealLetters(5);
 
 		if (Input.GetKeyDown(KeyCode.RightShift))
