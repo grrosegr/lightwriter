@@ -47,12 +47,14 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 	};
 
+	public event System.Action NewPhrase;
+
 	string[] PhrasesShuffled;
 	int nextPhraseIndex = 0;
 
 	public int PhraseNumber {
 		get {
-			if (nextPhraseIndex == 0)
+			if (nextPhraseIndex == 0 && PhrasesShuffled != null)
 				return PhrasesShuffled.Length;
 			return nextPhraseIndex;
 		}
@@ -82,6 +84,11 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		return result.ToArray();
 	}
 
+	void OnNewPhrase() {
+		if (NewPhrase != null) 
+			NewPhrase();
+	}
+
 	// Use this for initialization
 	void Start () {
 		PhrasesShuffled = PickPhrases();
@@ -91,6 +98,9 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	}
 
 	public string GetNextPhrase() {
+		int numPhrases = PhrasesShuffled.Length;
+		OnNewPhrase();
+
 		string phrase = PhrasesShuffled[nextPhraseIndex];
 		nextPhraseIndex = (nextPhraseIndex + 1) % PhrasesShuffled.Length;
 		return phrase;

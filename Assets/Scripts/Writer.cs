@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Linq;
 
-public class Writer : MyMonoBehaviour {
+public class Writer : Singleton<Writer> {
 
 	// Constants
 	const int MaxIncorrectKeysToGuess = 20;
@@ -29,6 +29,16 @@ public class Writer : MyMonoBehaviour {
 
 	float nextRevealTime;
 	bool stopped = false;
+
+	int correctLetters;
+	int totalLetters;
+
+	public float GetAccuracy() {
+		if (totalLetters == 0)
+			return 0;
+
+		return correctLetters / (float)totalLetters;
+	}
 
 //	GameObject Canvas;
 
@@ -86,6 +96,10 @@ public class Writer : MyMonoBehaviour {
 					break;
 			}
 		}
+
+		if (found)
+			correctLetters += 1;
+		totalLetters += 1;
 
 //		if (found)
 			myAudio.PlayOneShot(AssetHolder.Instance.Keypress);
@@ -205,7 +219,7 @@ public class Writer : MyMonoBehaviour {
 		}			
 
 		if (Input.GetKeyDown(KeyCode.LeftShift)) 
-			RevealLetters(5);
+			RevealLetters(10);
 
 		if (Input.GetKeyDown(KeyCode.RightShift))
 			Debug.Log(desiredWord);
