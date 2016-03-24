@@ -193,7 +193,9 @@ public class Writer : MyMonoBehaviour {
 				finishTime = Time.time + NextLevelChange;
 				finishTimerStarted = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
+
 				Score.Instance.Increment(500);
+				Countdown.Instance.AddBonusTime(Settings.Instance.BonusTime);
 			}
 		}
 

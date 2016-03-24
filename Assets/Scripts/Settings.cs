@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Settings : Singleton<Settings> {
 
-	public bool GlobalReplace;
+	public int BonusTime = 10;
 
 	// Use this for initialization
 	void Start () {

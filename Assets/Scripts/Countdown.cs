@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Countdown : MyMonoBehaviour {
+public class Countdown : Singleton<Countdown> {
 
 	public int MaxTime = 60;
+
 	float startTime;
 	bool hasStopped = false;
 
@@ -27,6 +28,11 @@ public class Countdown : MyMonoBehaviour {
 			hasStopped = true;
 			writer.Stop();
 		}
+
+	}
+
+	public void AddBonusTime(int t) {
+		MaxTime += t;
 
 	}
 }
