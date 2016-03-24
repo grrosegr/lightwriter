@@ -9,10 +9,11 @@ public class Writer : MyMonoBehaviour {
 	const int MaxIncorrectKeysToGuess = 20;
 	const int MinIncorrectKeysToGuess = 10;
 	const float InitialHintsRatio = .2f;
-	const float RevealRate = 2.0f;
 	const float NextLevelChange = 1.0f;
 
-
+	public bool GlobalReplace;
+	public bool AutoReveal = true;
+	public float RevealRate = 2.0f;
 
 	public GameObject FallingLetter;
 
@@ -74,14 +75,20 @@ public class Writer : MyMonoBehaviour {
 		if (mask[index] != '_')
 			Debug.LogWarning("Mask at " + index + " is not _, but " + mask[index]);
 
+		bool found = false;
+
 		for (int i = index; i < wordMask.Length; i++) {
 			if (mask[i] == '_' && char.ToLower(desiredWord[i]) == char.ToLower(c)) {
 				mask[i] = desiredWord[i];
 				Score.Instance.Increment(1);
-				myAudio.PlayOneShot(AssetHolder.Instance.Keypress);
-				break;
+				found = true;
+				if (!GlobalReplace)
+					break;
 			}
 		}
+
+//		if (found)
+			myAudio.PlayOneShot(AssetHolder.Instance.Keypress);
 
 		wordMask = new string(mask);
 
@@ -196,7 +203,7 @@ public class Writer : MyMonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.RightShift))
 			Debug.Log(desiredWord);
 
-		if (Time.time > nextRevealTime) {
+		if (AutoReveal && Time.time > nextRevealTime) {
 			RevealLetters(1);
 			nextRevealTime = Time.time + RevealRate;
 		}
