@@ -43,7 +43,9 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		"Those who know do not speak. Those who speak do not know.",
 		"Care about what other people think and you will always be their prisoner.",
 		// Steve Jobs
-		"Here’s to the crazy ones. The rebels. The troublemakers. The ones who see things differently. While some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do."
+		"Here’s to the crazy ones. The rebels. The troublemakers. The ones who see things differently. While some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.",
+		// V for Vendetta
+		"Remember, remember, the Fifth of November"
 
 	};
 
