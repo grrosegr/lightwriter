@@ -78,6 +78,20 @@ public class Writer : Singleton<Writer> {
 		wordMask = new string(desiredWord.Select<char,char>(nonspaceToUnderscore).ToArray());
 	}
 
+	float nextSound;
+//	bool playKeySound;
+//	float nextKeySound;
+	void PlayKeypress() {
+		if (Time.time < nextSound)
+			return;
+
+		nextSound = Time.time + Random.Range(0.02f, 0.04f);
+		
+		int soundIndex = Random.Range(0, AssetHolder.Instance.Keypresses.Length);
+		var sound = AssetHolder.Instance.Keypresses[soundIndex];		
+		myAudio.PlayOneShot(sound);
+	}
+
 	void RevealMatchingLetters(char c) {
 		char[] mask = wordMask.ToCharArray();
 
@@ -100,9 +114,6 @@ public class Writer : Singleton<Writer> {
 		if (found)
 			correctLetters += 1;
 		totalLetters += 1;
-
-//		if (found)
-			myAudio.PlayOneShot(AssetHolder.Instance.Keypress);
 
 		wordMask = new string(mask);
 
@@ -231,6 +242,8 @@ public class Writer : Singleton<Writer> {
 
 
 		if (Input.inputString != "" && Input.anyKeyDown) {
+			PlayKeypress();
+
 			foreach (char c in Input.inputString) {
 				if (!char.IsLetter(c))
 					continue;

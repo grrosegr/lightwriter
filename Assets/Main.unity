@@ -147,7 +147,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!1 &354570142
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,7 +248,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
 --- !u!1 &593148920
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +374,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
 --- !u!1 &716395580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1109,7 +1109,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 6
 --- !u!114 &1888962805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1122,7 +1122,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Win: {fileID: 8300000, guid: 3b945e35cf06d474ca37fd9369453529, type: 3}
-  Keypress: {fileID: 8300000, guid: 9a9990c58e6c34b998744ded974baf2c, type: 3}
+  Keypresses:
+  - {fileID: 8300000, guid: 71f26d5db76f34f3aa1f3a1c9273d175, type: 3}
+  - {fileID: 8300000, guid: 37a75204ce0bf4fb68002877bd642d67, type: 3}
+  - {fileID: 8300000, guid: 3aaa0ef75cac94bffbb8b398f95c7abd, type: 3}
+  - {fileID: 8300000, guid: 189d7c45c1bc14384ae419fc0e60ffa0, type: 3}
+  - {fileID: 8300000, guid: 96f5b60ae80194b90b429ee7a82c8804, type: 3}
 --- !u!1 &1936604931
 GameObject:
   m_ObjectHideFlags: 0
@@ -1222,7 +1227,7 @@ RectTransform:
   m_RootOrder: 6
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -105, y: -98}
+  m_AnchoredPosition: {x: -116, y: -121}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2094256780
