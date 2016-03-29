@@ -44,16 +44,16 @@ public class Distractinator : Singleton<Distractinator> {
 	}
 
 	void OnNewPhrase() {
-		int pnum = PhraseSelector.Instance.PhraseNumber;
-		int pct = PhraseSelector.Instance.PhraseCount;
-
-		if (pnum % 2 == 0 || pnum < Mathf.RoundToInt(pct * .5f)) {
-			currentDistraction = easy;
-		} else if (pnum < Mathf.RoundToInt(pct * .75f)) {
-			currentDistraction = medium;
-		} else {
-			currentDistraction = hard;
-		}
+//		int pnum = PhraseSelector.Instance.PhraseNumber;
+//		int pct = PhraseSelector.Instance.PhraseCount;
+//
+//		if (pnum % 2 == 0 || pnum < Mathf.RoundToInt(pct * .5f)) {
+//			currentDistraction = easy;
+//		} else if (pnum < Mathf.RoundToInt(pct * .75f)) {
+//			currentDistraction = medium;
+//		} else {
+//			currentDistraction = hard;
+//		}
 
 	}
 
