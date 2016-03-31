@@ -19,7 +19,7 @@ public class Score : Singleton<Score> {
 			return;
 		
 		lastCount = PhraseSelector.Instance.PhraseNumber;
-		text.text = string.Format("Score: {0}\nPhrase {1} of {2}", score, PhraseSelector.Instance.PhraseNumber, PhraseSelector.Instance.PhraseCount);
+		text.text = string.Format("Phrase {1} of {2}", score, PhraseSelector.Instance.PhraseNumber, PhraseSelector.Instance.PhraseCount);
 	}
 
 	public void Increment(int amount) {

@@ -19,6 +19,7 @@ public class Writer : Singleton<Writer> {
 
 	// Variables
 	string desiredWord;
+	Phrase currentPhrase;
 
 	string wordMask = "";
 
@@ -40,6 +41,14 @@ public class Writer : Singleton<Writer> {
 		return correctLetters / (float)totalLetters;
 	}
 
+	public event System.Action NewLevel;
+
+	private void OnNewLevel() {
+		if (NewLevel != null) {
+			NewLevel();
+		}
+	}
+
 //	GameObject Canvas;
 
 	// inclusive bounds
@@ -51,7 +60,8 @@ public class Writer : Singleton<Writer> {
 	}
 
 	void ResetGame() {
-		desiredWord = PhraseSelector.Instance.GetNextPhrase();
+		currentPhrase = PhraseSelector.Instance.GetNextPhrase();
+		desiredWord = currentPhrase.Quote;
 		finishTimerStarted = false;
 		index = 0;
 		RegenMask();
@@ -59,6 +69,7 @@ public class Writer : Singleton<Writer> {
 		ResetIncorrectKeys();
 		RevealLetters(Mathf.FloorToInt(wordMask.Count(x => x == '_') * InitialHintsRatio));
 		nextRevealTime = Time.time + RevealRate;
+		OnNewLevel();
 	}
 
 	public void Stop() {
@@ -109,7 +120,7 @@ public class Writer : Singleton<Writer> {
 		for (int i = index; i < wordMask.Length; i++) {
 			if (mask[i] == '_' && char.ToLower(desiredWord[i]) == char.ToLower(c)) {
 				mask[i] = desiredWord[i];
-				Score.Instance.Increment(1);
+//				Score.Instance.Increment(1);
 				found = true;
 				if (!GlobalReplace)
 					break;
@@ -118,6 +129,9 @@ public class Writer : Singleton<Writer> {
 
 		if (found)
 			correctLetters += 1;
+//		else
+//			myAudio.PlayOneShot(AssetHolder.Instance.Incorrect, 0.2f);
+
 		totalLetters += 1;
 
 		wordMask = new string(mask);
@@ -191,7 +205,7 @@ public class Writer : Singleton<Writer> {
 		else
 			suffix += newMask.Substring(index + 1);
 
-		string result = prefix + suffix;
+		string result = prefix + suffix + "\n" + currentPhrase.Source;
 
 		if (index == desiredWord.Length) {
 			result = "<color=green>" + result + "</color>";
@@ -231,7 +245,7 @@ public class Writer : Singleton<Writer> {
 				finishTimerStarted = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
 
-				Score.Instance.Increment(500);
+//				Score.Instance.Increment(500);
 				Countdown.Instance.AddBonusTime(Settings.Instance.BonusTime);
 			}
 		}			
