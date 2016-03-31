@@ -79,17 +79,22 @@ public class Writer : Singleton<Writer> {
 	}
 
 	float nextSound;
-//	bool playKeySound;
-//	float nextKeySound;
+	int soundIndex;
+	AudioClip[] soundsShuffled;
+
 	void PlayKeypress() {
 		if (Time.time < nextSound)
 			return;
 
 		nextSound = Time.time + Random.Range(0.02f, 0.04f);
+
+		if (soundsShuffled == null || soundIndex == 0)
+			soundsShuffled = AssetHolder.Instance.Keypresses.AsRandom().ToArray();
 		
-		int soundIndex = Random.Range(0, AssetHolder.Instance.Keypresses.Length);
-		var sound = AssetHolder.Instance.Keypresses[soundIndex];		
+//		int soundIndex = Random.Range(0, AssetHolder.Instance.Keypresses.Length);
+		var sound = soundsShuffled[soundIndex];		
 		myAudio.PlayOneShot(sound);
+		soundIndex = (soundIndex + 1) % AssetHolder.Instance.Keypresses.Length;
 	}
 
 	void RevealMatchingLetters(char c) {
@@ -190,6 +195,8 @@ public class Writer : Singleton<Writer> {
 
 		if (index == desiredWord.Length) {
 			result = "<color=green>" + result + "</color>";
+		} else {
+			result = result.Replace("_", "<color=#FFB3B3FF>_</color>");
 		}
 
 		myText.text = result;
