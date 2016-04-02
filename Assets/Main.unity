@@ -239,6 +239,11 @@ MonoBehaviour:
   BonusTime: 3
   QuotesPerGame: 15
   LongestQuotesOnly: 0
+  FillableColor: '#FF8F8FFF'
+  HighlightFillable: 1
+  UnfillableColor: '#494949FF'
+  ColorLastFilled: 0
+  LastFilledColor: '#3FEE82FF'
 --- !u!4 &436381789
 Transform:
   m_ObjectHideFlags: 0
@@ -318,7 +323,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Phrase 1 of 2
+  m_Text: Quote 1 of 15
 --- !u!222 &593148923
 CanvasRenderer:
   m_ObjectHideFlags: 0

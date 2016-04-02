@@ -40,9 +40,4 @@ public class Countdown : Singleton<Countdown> {
 		}
 
 	}
-
-	public void AddBonusTime(int t) {
-		MaxTime += t;
-
-	}
 }

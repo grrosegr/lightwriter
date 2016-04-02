@@ -1,9 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
+using System.Text;
 
 public class Writer : Singleton<Writer> {
+
+	// Events
+
+	public event System.Action NewLevel;
+
+	private void OnNewLevel() {
+		if (NewLevel != null) {
+			NewLevel();
+		}
+	}
 
 	// Constants
 	const int MaxIncorrectKeysToGuess = 20;
@@ -41,14 +53,6 @@ public class Writer : Singleton<Writer> {
 		return correctLetters / (float)totalLetters;
 	}
 
-	public event System.Action NewLevel;
-
-	private void OnNewLevel() {
-		if (NewLevel != null) {
-			NewLevel();
-		}
-	}
-
 //	GameObject Canvas;
 
 	// inclusive bounds
@@ -60,6 +64,7 @@ public class Writer : Singleton<Writer> {
 	}
 
 	void LoadNewLevel() {
+		lastFilledIndex = -1;
 		currentPhrase = PhraseSelector.Instance.GetNextPhrase();
 		desiredWord = currentPhrase.Quote;
 		sourceText.text = currentPhrase.Source;
@@ -111,6 +116,8 @@ public class Writer : Singleton<Writer> {
 		soundIndex = (soundIndex + 1) % AssetHolder.Instance.Keypresses.Length;
 	}
 
+	int lastFilledIndex = -1;
+
 	void RevealMatchingLetters(char c) {
 		char[] mask = wordMask.ToCharArray();
 
@@ -123,6 +130,7 @@ public class Writer : Singleton<Writer> {
 		for (int i = index; i < wordMask.Length; i++) {
 			if (mask[i] == '_' && char.ToLower(desiredWord[i]) == char.ToLower(c)) {
 				mask[i] = desiredWord[i];
+				lastFilledIndex = i;
 //				Score.Instance.Increment(1);
 				found = true;
 				if (!GlobalReplace)
@@ -213,7 +221,31 @@ public class Writer : Singleton<Writer> {
 		if (index == desiredWord.Length) {
 			result = "<color=green>" + result + "</color>";
 		} else {
-			result = result.Replace("_", "<color=#FFB3B3FF>_</color>");
+
+			HashSet<char> missingChars = new HashSet<char>();
+
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < result.Length; i++) {
+				if (result[i] != '_') {
+					if (i == lastFilledIndex && Settings.Instance.ColorLastFilled) 
+						builder.Append(string.Format("<color={0}>{1}</color>", Settings.Instance.LastFilledColor, result[i]));
+					else
+						builder.Append(result[i]);
+					continue;
+				} 
+
+				char canonical = char.ToLowerInvariant(desiredWord[i]);
+				string color = "";
+
+				if (!Settings.Instance.HighlightFillable || missingChars.Contains(canonical)) {
+					color = Settings.Instance.UnfillableColor;
+				} else {
+					color = Settings.Instance.FillableColor;
+					missingChars.Add(canonical);
+				}
+				builder.Append(string.Format("<color={0}>_</color>", color));
+			}
+			result = builder.ToString();
 		}
 
 		myText.text = result;
@@ -247,9 +279,6 @@ public class Writer : Singleton<Writer> {
 				finishTime = Time.time + NextLevelChange;
 				finishTimerStarted = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
-
-//				Score.Instance.Increment(500);
-				Countdown.Instance.AddBonusTime(Settings.Instance.BonusTime);
 			}
 		}			
 
