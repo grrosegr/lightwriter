@@ -34,7 +34,7 @@ public class Phrase {
 	private string author;
 	private string work;
 
-	public Phrase(string quote, string author, string work) {
+	public Phrase(string quote, string author = "", string work = "") {
 		this.Quote = quote;
 		this.author = author;
 		this.work = work;
@@ -399,6 +399,78 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		new Phrase("What is the most resilient parasite? Bacteria? A virus? An intestinal worm? An idea. Resilient... highly contagious. Once an idea has taken hold of the brain it's almost impossible to eradicate. An idea that is fully formed - fully understood - that sticks; right in there somewhere.",
 			"Cobb",
 			"Inception (2010)"),
+		new Phrase("The shadow of the ruins looms above, filling you with determination.",
+			"Undertale",
+			""),
+		new Phrase("Knowing the mouse might one day leave its hole and get the cheese... It fills you with determination.",
+			"Undertale",
+			""),
+		new Phrase("Despite everything, it's still you.",
+			"Undertale",
+			""),
+		new Phrase("WHO KNEW THAT ALL I NEEDED TO MAKE PALS... WAS TO GIVE PEOPLE AWFUL PUZZLES AND THEN FIGHT THEM??",
+			"Papyrus",
+			"Undertale"),
+		new Phrase("You feel like you're going to have a bad time.",
+			"",
+			"Undertale"),
+		// "You never gained LOVE, but you gained love."
+		new Phrase("So hello from the other side. / I must have called a thousand times. / To tell you I'm sorry for everything that I've done. / But when I call you never seem to be home",
+			"Adele",
+			"Hello")
+		// Hello
+		// It's me
+	};
+
+	readonly Phrase[] TonyPhrases = new Phrase[] {
+		new Phrase("If you can dream it, you can do it.", "Walt Disney"),
+		new Phrase("If you are still looking for that one person who will change your life, take a look in the mirror.",
+			"Roman Price"),
+		new Phrase("Start by doing what's necessary; then do what's possible; and suddenly you are doing the impossible.",
+			"Francis of Assisi"),
+		new Phrase("Anything you think, you can do.",
+			"Bradley Whitford"), // actually made up
+		new Phrase("So tell me: do you actually believe any of that?"),
+		new Phrase("You know I made that last one up, right?"),
+		new Phrase("You couldn't even tell, probably."),
+		new Phrase("Never believe everything you read on the Internet.", "Abraham Lincoln"),
+		// More quotes
+		new Phrase("Sometimes it's the very people who no one imagines anything of who do the things no one can imagine.", 
+		"Alan Turing", 
+		""),
+		new Phrase("I would be the least among men with dreams and the desire to fulfil them, rather than the greatest with no dreams and no desires.", 
+			"Kahlil Gibran", 
+		""),
+		new Phrase("Be the change that you wish to see in the world.", 
+			"Mahatma Gandhi", 
+			""),
+		new Phrase("They're kind of monotonous, frankly."),
+		new Phrase("Personally, I think it's depressing. What about when we fail."),
+		new Phrase("At least I can say that I've tried.", "Adele", "Hello"),
+		new Phrase("I see now that the circumstances of one's birth are irrelevant; it is what you do with the gift of life that determines who you are.",
+			"Mewtwo",
+			"Pokémon: The First Movie (1998)"),
+		new Phrase("Ugh. Movies, too?"),
+		new Phrase("If at first you don't succeed, Try, try, try again."),
+		new Phrase("Uggggggggh."),
+		new Phrase("If at first you don't succeed, try, try again. Then quit. There's no point in being a damn fool about it.",
+			"W. C. Fields"),
+		new Phrase("Now that's more like it.")
+
+//		new Phrase("Carpe diem.", 
+//		"Horace", 
+//			"Odes (23 BC)"),
+//		
+//		new Phrase("Care about what other people think and you will always be their prisoner.", 
+//		"Lao Tzu", 
+//		"Tao Te Ching"),
+//		new Phrase("Knowing others is intelligence;\nknowing yourself is true wisdom.\nMastering others is strength; \nmastering yourself is true power.", 
+//		"Lao Tzu", 
+//		"Tao Te Ching"),
+//		new Phrase("We shall defend our island, whatever the cost may be, we shall fight on the beaches, we shall fight on the landing grounds, we shall fight in the fields and in the streets, we shall fight in the hills; we shall never surrender.",
+//			"Winston Churchill",
+//			""),
+
 	};
 
 	public event System.Action NewPhrase;
@@ -426,10 +498,20 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	Phrase[] PickPhrases() {
 //		var quotesOrdered;
 
+		if (Settings.Instance.TonyMod)
+			return TonyPhrases;
+
+		if (Settings.Instance.NewestQuotesOnly)
+			return Phrases.Reverse().Take(Settings.Instance.QuotesPerGame).ToArray();
+
 		if (Settings.Instance.LongestQuotesOnly)
 			return Phrases.OrderByDescending(x => x.Quote.Length).Take(Settings.Instance.QuotesPerGame).ToArray();
 
-		return Phrases.AsRandom().Take(Settings.Instance.QuotesPerGame).ToArray();
+		var quotes = Phrases.AsRandom().Take(Settings.Instance.QuotesPerGame);
+		if (Settings.Instance.SortQuotes)
+			quotes = quotes.OrderBy(x => x.Quote.Length);
+
+		return quotes.ToArray();
 
 //		var result = new List<Phrase>();
 //
@@ -457,9 +539,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		Debug.LogFormat("Longest quote ({0} chars): {1}", longestQuote.Quote.Length, longestQuote.Quote);
 
 		PhrasesShuffled = PickPhrases();
-			//Phrases.OrderBy(x => x.Length).ToArray();
-//			AsRandom().ToArray();
-
+		Debug.Log("Game started"); // but actually just to clear quote from the console lol
 	}
 
 	public Phrase GetNextPhrase() {

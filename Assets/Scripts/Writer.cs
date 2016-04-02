@@ -17,10 +17,17 @@ public class Writer : Singleton<Writer> {
 		}
 	}
 
+	public event System.Action<char> Mistake;
+
+	private void OnMistake(char incorrectChar) {
+		if (Mistake != null) {
+			Mistake(incorrectChar);
+		}
+	}
+
 	// Constants
 	const int MaxIncorrectKeysToGuess = 20;
 	const int MinIncorrectKeysToGuess = 10;
-	const float InitialHintsRatio = .6f;
 	const float NextLevelChange = 1.0f;
 
 	public bool GlobalReplace;
@@ -31,7 +38,7 @@ public class Writer : Singleton<Writer> {
 
 	// Variables
 	string desiredWord;
-	Phrase currentPhrase;
+	public Phrase CurrentPhrase {get; private set;}
 
 	string wordMask = "";
 
@@ -65,15 +72,15 @@ public class Writer : Singleton<Writer> {
 
 	void LoadNewLevel() {
 		lastFilledIndex = -1;
-		currentPhrase = PhraseSelector.Instance.GetNextPhrase();
-		desiredWord = currentPhrase.Quote;
-		sourceText.text = currentPhrase.Source;
+		CurrentPhrase = PhraseSelector.Instance.GetNextPhrase();
+		desiredWord = CurrentPhrase.Quote;
+		sourceText.text = CurrentPhrase.Source;
 		finishTimerStarted = false;
 		index = 0;
 		RegenMask();
 		Redraw();
 		ResetIncorrectKeys();
-		RevealLetters(Mathf.FloorToInt(wordMask.Count(x => x == '_') * InitialHintsRatio));
+		RevealLetters(Mathf.FloorToInt(wordMask.Count(x => x == '_') * Settings.Instance.InitialHintsRatio));
 		nextRevealTime = Time.time + RevealRate;
 		OnNewLevel();
 	}
@@ -140,8 +147,10 @@ public class Writer : Singleton<Writer> {
 
 		if (found)
 			correctLetters += 1;
-//		else
-//			myAudio.PlayOneShot(AssetHolder.Instance.Incorrect, 0.2f);
+		else {
+			myAudio.PlayOneShot(AssetHolder.Instance.Incorrect, 0.7f);
+			OnMistake(c);
+		}
 
 		totalLetters += 1;
 
@@ -205,6 +214,11 @@ public class Writer : Singleton<Writer> {
 			myText.text = "Game Over!";
 			return;
 		}
+
+		if (Settings.Instance.BrowseMode) {
+			myText.text = desiredWord;
+			return;
+		}			
 
 		string prefix = desiredWord.Substring(0, index);
 

@@ -17,4 +17,13 @@ public class Settings : Singleton<Settings> {
 
 	public bool ColorLastFilled = true;
 	public string LastFilledColor = "green";
+
+	public bool SortQuotes = false;
+	public bool NewestQuotesOnly = false;
+
+	public float InitialHintsRatio = .6f;
+
+	public bool BrowseMode = false;
+
+	public bool TonyMod = false;
 }

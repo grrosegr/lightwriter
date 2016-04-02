@@ -209,6 +209,91 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!1 &398791161
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 398791162}
+  - 222: {fileID: 398791164}
+  - 114: {fileID: 398791163}
+  - 114: {fileID: 398791165}
+  m_Layer: 5
+  m_Name: LivesCounter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &398791162
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 398791161}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 716395584}
+  m_RootOrder: 9
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -57}
+  m_SizeDelta: {x: 340.6, y: 85}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &398791163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 398791161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: ce0df507cdede415489ddd393cf58a82, type: 3}
+    m_FontSize: 73
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 10
+    m_MaxSize: 300
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: X<color=#494949FF>______</color>
+--- !u!222 &398791164
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 398791161}
+--- !u!114 &398791165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 398791161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d0372815b4404469bc97f56984db146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &436381787
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,13 +322,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BonusTime: 3
-  QuotesPerGame: 15
+  QuotesPerGame: 99
   LongestQuotesOnly: 0
   FillableColor: '#FF8F8FFF'
   HighlightFillable: 1
   UnfillableColor: '#494949FF'
   ColorLastFilled: 0
   LastFilledColor: '#3FEE82FF'
+  SortQuotes: 0
+  NewestQuotesOnly: 0
+  InitialHintsRatio: 0.6
+  BrowseMode: 0
+  TonyMod: 1
 --- !u!4 &436381789
 Transform:
   m_ObjectHideFlags: 0
@@ -472,6 +562,7 @@ RectTransform:
   - {fileID: 2094256779}
   - {fileID: 1641763207}
   - {fileID: 2037651298}
+  - {fileID: 398791162}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
@@ -661,7 +752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1184958613
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1219,7 +1310,7 @@ GameObject:
   - 114: {fileID: 1888962803}
   - 114: {fileID: 1888962805}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: AssetHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1266,7 +1357,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3aaa0ef75cac94bffbb8b398f95c7abd, type: 3}
   - {fileID: 8300000, guid: 189d7c45c1bc14384ae419fc0e60ffa0, type: 3}
   - {fileID: 8300000, guid: 96f5b60ae80194b90b429ee7a82c8804, type: 3}
-  Incorrect: {fileID: 8300000, guid: 2ddd0f35bc6ab45a898125f5c89bb5a1, type: 3}
+  Incorrect: {fileID: 8300000, guid: 1e34c72bd307342e39f5fd5725b8df74, type: 3}
 --- !u!1 &1936604931
 GameObject:
   m_ObjectHideFlags: 0
