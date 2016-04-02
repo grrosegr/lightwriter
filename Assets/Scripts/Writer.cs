@@ -59,7 +59,7 @@ public class Writer : Singleton<Writer> {
 //		incorrectKeysRemaining = Random.Range(MinIncorrectKeysToGuess, MaxIncorrectKeysToGuess + 1);
 	}
 
-	void ResetGame() {
+	void LoadNewLevel() {
 		currentPhrase = PhraseSelector.Instance.GetNextPhrase();
 		desiredWord = currentPhrase.Quote;
 		finishTimerStarted = false;
@@ -82,7 +82,7 @@ public class Writer : Singleton<Writer> {
 	}
 		
 	void Start () {
-		ResetGame();
+		LoadNewLevel();
 	}
 
 	void RegenMask() {
@@ -205,7 +205,7 @@ public class Writer : Singleton<Writer> {
 		else
 			suffix += newMask.Substring(index + 1);
 
-		string result = prefix + suffix + "\n" + currentPhrase.Source;
+		string result = prefix + suffix + "\n- " + currentPhrase.Source;
 
 		if (index == desiredWord.Length) {
 			result = "<color=green>" + result + "</color>";
@@ -238,7 +238,7 @@ public class Writer : Singleton<Writer> {
 			
 			if (finishTimerStarted) {
 				if (Time.time > finishTime) {
-					ResetGame();
+					LoadNewLevel();
 				}
 			} else {
 				finishTime = Time.time + NextLevelChange;
@@ -254,7 +254,7 @@ public class Writer : Singleton<Writer> {
 			RevealLetters(10);
 
 		if (Input.GetKeyDown(KeyCode.RightShift))
-			Debug.Log(desiredWord);
+			LoadNewLevel();
 
 		if (AutoReveal && Time.time > nextRevealTime) {
 			RevealLetters(1);
