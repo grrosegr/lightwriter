@@ -11,7 +11,7 @@ public class Phrase {
 			// TODO: italics?
 
 			if (IsGood(author) && IsGood(work)) {
-				return string.Format("{0}, {1}", author, work);
+				return string.Format("{0},\n{1}", author, work);
 			}  
 
 			if (IsGood(author)) {
@@ -110,7 +110,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		new Phrase("All men dream: but not equally. Those who dream by night in the dusty recesses of their minds wake in the day to find that it was vanity:"
 			+ " but the dreamers of the day are dangerous men, for they may act their dreams with open eyes, to make it possible.", 
 			"T. E. Lawrence", 
-		""),
+			""),
 		// Sun Tzu
 		new Phrase("Appear weak when you are strong, and strong when you are weak.", 
 		"Sun Tzu", 
@@ -206,7 +206,11 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		""),
 		new Phrase("The human sacrificed himself, to save the Pokemon. I pitted them against each other, but not until they set aside their differences did I see the true power they all share deep inside. I see now that the circumstances of one's birth are irrelevant; it is what you do with the gift of life that determines who you are.", 
 		"Mewtwo", 
-			"Pokémon: The First Movie - Mewtwo Strikes Back (1998)"), // Mewtwo
+			"Pokémon: The First Movie (1998)"), // Mewtwo
+		new Phrase("We do have a lot in common. The same air, the same Earth, the same sky. Maybe if we started looking at what's the same instead of always looking at what's different, ...well, who knows?",
+			"Meowth",
+			"Pokémon: The First Movie (1998)"),
+
 		new Phrase("If most of us are ashamed of shabby clothes and shoddy furniture, let us be more ashamed of shabby ideas and shoddy philosophies.", 
 		"Albert Einstein", 
 		""),
@@ -357,18 +361,25 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	}
 
 	Phrase[] PickPhrases() {
-		var result = new List<Phrase>();
+//		var quotesOrdered;
 
-		var phrasesSorted = Phrases.OrderBy(x => x.Quote.Length).ToArray();
+		if (Settings.Instance.LongestQuotesOnly)
+			return Phrases.OrderByDescending(x => x.Quote.Length).Take(Settings.Instance.QuotesPerGame).ToArray();
 
-		for (int i = 0; i < phrasesSorted.Length; i += 2) {
-			if (Random.value > 0.5f || i >= Phrases.Length - 1) {
-				result.Add(phrasesSorted[i]);
-			} else
-				result.Add(phrasesSorted[i + 1]);
-		}
+		return Phrases.AsRandom().Take(Settings.Instance.QuotesPerGame).ToArray();
 
-		return result.ToArray();
+//		var result = new List<Phrase>();
+//
+//		var phrasesSorted = Phrases.OrderBy(x => x.Quote.Length).ToArray();
+//
+//		for (int i = 0; i < phrasesSorted.Length; i += 2) {
+//			if (Random.value > 0.5f || i >= Phrases.Length - 1) {
+//				result.Add(phrasesSorted[i]);
+//			} else
+//				result.Add(phrasesSorted[i + 1]);
+//		}
+//
+//		return result.ToArray();
 	}
 
 	void OnNewPhrase() {
@@ -379,6 +390,9 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	// Use this for initialization
 	void Start () {
 		print(Phrases.Length + " phrases loaded");
+		var longestQuote = Phrases.MaxBy(x => x.Quote.Length);
+		Debug.LogFormat("Longest quote ({0} chars): {1}", longestQuote.Quote.Length, longestQuote.Quote);
+
 		PhrasesShuffled = PickPhrases();
 			//Phrases.OrderBy(x => x.Length).ToArray();
 //			AsRandom().ToArray();
@@ -386,7 +400,6 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	}
 
 	public Phrase GetNextPhrase() {
-		int numPhrases = PhrasesShuffled.Length;
 		OnNewPhrase();
 
 		Phrase phrase = PhrasesShuffled[nextPhraseIndex];

@@ -62,6 +62,7 @@ public class Writer : Singleton<Writer> {
 	void LoadNewLevel() {
 		currentPhrase = PhraseSelector.Instance.GetNextPhrase();
 		desiredWord = currentPhrase.Quote;
+		sourceText.text = currentPhrase.Source;
 		finishTimerStarted = false;
 		index = 0;
 		RegenMask();
@@ -78,8 +79,10 @@ public class Writer : Singleton<Writer> {
 	}
 
 	void Awake() {
-//		Canvas = GameObject.Find("Canvas");
+		sourceText = GameObject.Find("Source").GetComponent<Text>();
 	}
+
+	Text sourceText;
 		
 	void Start () {
 		LoadNewLevel();
@@ -205,7 +208,7 @@ public class Writer : Singleton<Writer> {
 		else
 			suffix += newMask.Substring(index + 1);
 
-		string result = prefix + suffix + "\n- " + currentPhrase.Source;
+		string result = prefix + suffix;
 
 		if (index == desiredWord.Length) {
 			result = "<color=green>" + result + "</color>";

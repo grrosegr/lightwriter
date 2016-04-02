@@ -5,15 +5,7 @@ public class Settings : Singleton<Settings> {
 
 	public int BonusTime = 10;
 
+	public int QuotesPerGame = 10;
 
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	public bool LongestQuotesOnly;
 }
