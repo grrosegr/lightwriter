@@ -99,7 +99,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		"Horace", 
 			"Odes (23 BC)"),
 		new Phrase("One should use common words to say uncommon things.", 
-			"Arthur Schopenhauer", 
+			"Arthur Schopenhauer",  
 		"The Art of Literature"),
 		new Phrase("Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.", 
 			"Antoine de Saint-Exupery", 
@@ -427,6 +427,15 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		new Phrase("With great power comes great responsibility.",
 			"Uncle Ben",
 			"Spider-Man (2002)"),
+
+		new Phrase("What is drama but life with the dull bits cut out.",
+			"Alfred Hitchcock"),
+
+		new Phrase("Those who can imagine anything, can create the impossible.",
+			"Alan Turing"),
+		new Phrase("If a machine is expected to be infallible, it cannot also be intelligent.",
+			"Alan Turing"),
+		
 	};
 
 	readonly Phrase[] TonyPhrases = new Phrase[] {
@@ -444,7 +453,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		// More quotes
 		new Phrase("Sometimes it's the very people who no one imagines anything of who do the things no one can imagine.", 
 		"Alan Turing", 
-		""),
+			"The Imitation Game (2014)"),
 		new Phrase("I would be the least among men with dreams and the desire to fulfil them, rather than the greatest with no dreams and no desires.", 
 			"Kahlil Gibran", 
 		""),
@@ -487,7 +496,9 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 	public int PhraseNumber {
 		get {
-			return ShortPhraseIndex + LongPhraseIndex + 1;
+			return quoteNum;
+
+//			return ShortPhraseIndex + LongPhraseIndex + 1;
 //			if (nextPhraseIndex == 0 && PhrasesShuffled != null)
 //				return PhrasesShuffled.Length;
 //			return nextPhraseIndex;
@@ -496,9 +507,10 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 	public int PhraseCount {
 		get {
-			if (ShortPhrases == null || LongPhrases == null)
-				return 1337;
-			return ShortPhrases.Length + LongPhrases.Length;
+			return Settings.Instance.QuotesPerGame;
+//			if (ShortPhrases == null || LongPhrases == null)
+//				return 1337;
+//			return ShortPhrases.Length + LongPhrases.Length;
 //			if (PhrasesShuffled == null)
 //				return 0;
 //			
@@ -518,12 +530,14 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	Phrase[] LongPhrases;
 	int ShortPhraseIndex;
 	int LongPhraseIndex;
+	int quoteNum;
 
 	public Phrase GetNextShortPhrase() {
 		OnNewPhrase();
 
 		Phrase phrase = ShortPhrases[ShortPhraseIndex];
 		ShortPhraseIndex = (ShortPhraseIndex + 1) % ShortPhrases.Length;
+		quoteNum += 1;
 		return phrase;
 	}
 
@@ -532,6 +546,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 		Phrase phrase = LongPhrases[LongPhraseIndex];
 		LongPhraseIndex = (LongPhraseIndex + 1) % LongPhrases.Length;
+		quoteNum += 1;
 		return phrase;
 	}
 

@@ -346,7 +346,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -368,7 +368,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!1 &436381787
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,7 +404,7 @@ MonoBehaviour:
   UnfillableColor: '#494949FF'
   ColorLastFilled: 0
   LastFilledColor: '#3FEE82FF'
-  SortQuotes: 0
+  SortQuotes: 1
   NewestQuotesOnly: 0
   InitialHintsRatio: 0.6
   BrowseMode: 0
@@ -1802,12 +1802,12 @@ GameObject:
   - 222: {fileID: 2015816342}
   - 114: {fileID: 2015816341}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PressSpace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2015816340
 RectTransform:
   m_ObjectHideFlags: 0

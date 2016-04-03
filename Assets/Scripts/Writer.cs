@@ -73,6 +73,7 @@ public class Writer : Singleton<Writer> {
 	bool isFastMode;
 
 	void LoadNewLevel() {
+		pressSpace.enabled = false;
 		quoteFailed = false;
 		lastFilledIndex = -1;
 
@@ -81,10 +82,10 @@ public class Writer : Singleton<Writer> {
 
 		if (isFastMode) {
 			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
-			Countdown.Instance.MaxTime = Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
+			Countdown.Instance.MaxTime = 3;// Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
 			Countdown.Instance.Activate();
 			LivesCounter.Instance.Deactivate();
-			slowMusic.Stop();
+			slowMusic.Pause();
 			fastMusic.Play();
 
 		} else {
@@ -93,11 +94,12 @@ public class Writer : Singleton<Writer> {
 			LivesCounter.Instance.Activate();
 
 			slowMusic.Play();
-			fastMusic.Stop();
+			fastMusic.Pause();
 		}
 
 //		CurrentPhrase = PhraseSelector.Instance.GetNextPhrase();
 		desiredWord = CurrentPhrase.Quote;
+		print(desiredWord.Length);
 		sourceText.text = CurrentPhrase.Source;
 		finishTimerStarted = false;
 		index = 0;
@@ -125,8 +127,10 @@ public class Writer : Singleton<Writer> {
 	}
 
 	Text sourceText;
+	Text pressSpace;
 		
 	void Start () {
+		pressSpace = GameObject.Find("PressSpace").GetComponent<Text>();
 		LoadNewLevel();
 	}
 
@@ -234,14 +238,15 @@ public class Writer : Singleton<Writer> {
 	bool quoteFailed;
 	float continueAfterFailingTime;
 	public void FailQuote() {
+		pressSpace.enabled = true;
 		quoteFailed = true;
 		continueAfterFailingTime = Time.time + Settings.Instance.LevelChangeWait;
 //		finishTimerStarted = true;
 //		finishTime = Time.time + NextLevelChange;
 		myAudio.PlayOneShot(AssetHolder.Instance.Lose);
 		Redraw();
-		fastMusic.Stop();
-		slowMusic.Stop();
+		fastMusic.Pause();
+		slowMusic.Pause();
 	}
 
 	char nonspaceToUnderscore(char x) {
@@ -262,11 +267,6 @@ public class Writer : Singleton<Writer> {
 			return;
 		}			
 
-		if (quoteFailed) {
-			myText.text = "<color=red>" + desiredWord + "</color>";
-			return;
-		}
-
 		string prefix = desiredWord.Substring(0, index);
 
 		string newMask = wordMask;
@@ -279,7 +279,20 @@ public class Writer : Singleton<Writer> {
 
 		string result = prefix + suffix;
 
-		if (index == desiredWord.Length) {
+		if (quoteFailed) {
+			myText.text = "<color=red>" + desiredWord + "</color>";
+
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < result.Length; i++) {
+				if (result[i] == '_') {
+					builder.AppendFormat("<color={0}>{1}</color>", "red", desiredWord[i]);
+				} else {
+					builder.Append(result[i]);
+				}
+			}
+			result = builder.ToString();
+
+		} else if (index == desiredWord.Length) {
 			result = "<color=green>" + result + "</color>";
 		} else {
 
@@ -340,26 +353,26 @@ public class Writer : Singleton<Writer> {
 		if (index >= desiredWord.Length || finishTimerStarted) {
 			
 			if (finishTimerStarted) {
-//				if (Time.time > finishTime) {
-//					LoadNewLevel();
-//				}
 
-				if (Input.GetKeyDown(KeyCode.Space))
+				if (Time.time > finishTime && !pressSpace.enabled)
+					pressSpace.enabled = true;
+
+				if (Input.GetKeyDown(KeyCode.Space) && Time.time > finishTime)
 					LoadNewLevel();
 			} else {
 				finishTime = Time.time + Settings.Instance.LevelChangeWait;
 				finishTimerStarted = true;
 				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
-				fastMusic.Stop();
-				slowMusic.Stop();
+				fastMusic.Pause();
+				slowMusic.Pause();
 			}
 		}			
 
-		if (Input.GetKeyDown(KeyCode.LeftShift)) 
+		if (Input.GetKeyDown(KeyCode.F1)) 
 			RevealLetters(10);
 
-		if (Input.GetKeyDown(KeyCode.RightShift))
+		if (Input.GetKeyDown(KeyCode.F12))
 			LoadNewLevel();
 
 		if (AutoReveal && Time.time > nextRevealTime) {

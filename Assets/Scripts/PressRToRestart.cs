@@ -13,9 +13,7 @@ public class PressRToRestart : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Backslash))
-			keyDownStart = Time.time;
-		else if (Input.GetKey(KeyCode.Backslash) && (Time.time - keyDownStart > 1.0f)) {
+		if (Input.GetKeyDown(KeyCode.F8)) {
 			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		}
 			
