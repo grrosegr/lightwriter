@@ -26,4 +26,14 @@ public class Settings : Singleton<Settings> {
 	public bool BrowseMode = false;
 
 	public bool TonyMod = false;
+
+	public int PhraseThreshold = 150;
+
+	public float SwitchProbability = 0.7f;
+
+	public int MinTime = 10;
+	public int MaxTime = 30;
+	public float TimePerChar = 0.1f;
+
+	public bool Tick;
 }

@@ -28,7 +28,7 @@ public class Writer : Singleton<Writer> {
 	// Constants
 	const int MaxIncorrectKeysToGuess = 20;
 	const int MinIncorrectKeysToGuess = 10;
-	const float NextLevelChange = 1.0f;
+	const float NextLevelChange = 0.5f;
 
 	public bool GlobalReplace;
 	public bool AutoReveal = true;
@@ -70,9 +70,28 @@ public class Writer : Singleton<Writer> {
 //		incorrectKeysRemaining = Random.Range(MinIncorrectKeysToGuess, MaxIncorrectKeysToGuess + 1);
 	}
 
+	bool isFastMode;
+
 	void LoadNewLevel() {
+		quoteFailed = false;
 		lastFilledIndex = -1;
-		CurrentPhrase = PhraseSelector.Instance.GetNextPhrase();
+
+		if (Random.value < Settings.Instance.SwitchProbability)
+			isFastMode = !isFastMode;
+
+		if (isFastMode) {
+			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
+			Countdown.Instance.MaxTime = Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
+			Countdown.Instance.Activate();
+			LivesCounter.Instance.Deactivate();
+
+		} else {
+			CurrentPhrase = PhraseSelector.Instance.GetNextShortPhrase();
+			Countdown.Instance.Deactivate();
+			LivesCounter.Instance.Activate();
+		}
+
+//		CurrentPhrase = PhraseSelector.Instance.GetNextPhrase();
 		desiredWord = CurrentPhrase.Quote;
 		sourceText.text = CurrentPhrase.Source;
 		finishTimerStarted = false;
@@ -148,7 +167,6 @@ public class Writer : Singleton<Writer> {
 		if (found)
 			correctLetters += 1;
 		else {
-			myAudio.PlayOneShot(AssetHolder.Instance.Incorrect, 0.7f);
 			OnMistake(c);
 		}
 
@@ -202,6 +220,17 @@ public class Writer : Singleton<Writer> {
 		Redraw();
 	}
 
+	bool quoteFailed;
+	float continueAfterFailingTime;
+	public void FailQuote() {
+		quoteFailed = true;
+		continueAfterFailingTime = Time.time + 1.0f;
+//		finishTimerStarted = true;
+//		finishTime = Time.time + NextLevelChange;
+		myAudio.PlayOneShot(AssetHolder.Instance.Lose);
+		Redraw();
+	}
+
 	char nonspaceToUnderscore(char x) {
 		if (!char.IsLetter(x))
 			return x;
@@ -219,6 +248,11 @@ public class Writer : Singleton<Writer> {
 			myText.text = desiredWord;
 			return;
 		}			
+
+		if (quoteFailed) {
+			myText.text = "<color=red>" + desiredWord + "</color>";
+			return;
+		}
 
 		string prefix = desiredWord.Substring(0, index);
 
@@ -283,15 +317,26 @@ public class Writer : Singleton<Writer> {
 		if (stopped)
 			return;
 
+		if (quoteFailed) {
+			if (Input.anyKeyDown && Time.time > continueAfterFailingTime) {
+				LoadNewLevel();
+			}
+			return;
+		}
+
 		if (index >= desiredWord.Length || finishTimerStarted) {
 			
 			if (finishTimerStarted) {
-				if (Time.time > finishTime) {
+//				if (Time.time > finishTime) {
+//					LoadNewLevel();
+//				}
+
+				if (Input.anyKeyDown)
 					LoadNewLevel();
-				}
 			} else {
 				finishTime = Time.time + NextLevelChange;
 				finishTimerStarted = true;
+				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
 			}
 		}			

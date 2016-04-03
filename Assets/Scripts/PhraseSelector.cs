@@ -267,7 +267,10 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 			"Steve Rogers (Captain America)",
 			"The Avengers (2012)"),
 		new Phrase("Thanks, but the last time I was in New York I kind of broke... Harlem.",
-			"Bruce Banner (Hulk)",
+			"Bruce Banner (The Hulk)",
+			"The Avengers (2012)"),
+		new Phrase("That’s my secret, Captain. I’m always angry.",
+			"Bruce Banner (The Hulk)",
 			"The Avengers (2012)"),
 		new Phrase("Here's some advice. Stay alive.",
 			"Haymitch Abernathy",
@@ -417,9 +420,13 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		// "You never gained LOVE, but you gained love."
 		new Phrase("So hello from the other side. / I must have called a thousand times. / To tell you I'm sorry for everything that I've done. / But when I call you never seem to be home",
 			"Adele",
-			"Hello")
+			"Hello"),
 		// Hello
 		// It's me
+
+		new Phrase("With great power comes great responsibility.",
+			"Uncle Ben",
+			"Spider-Man (2002)"),
 	};
 
 	readonly Phrase[] TonyPhrases = new Phrase[] {
@@ -480,23 +487,59 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 	public int PhraseNumber {
 		get {
-			if (nextPhraseIndex == 0 && PhrasesShuffled != null)
-				return PhrasesShuffled.Length;
-			return nextPhraseIndex;
+			return ShortPhraseIndex + LongPhraseIndex + 1;
+//			if (nextPhraseIndex == 0 && PhrasesShuffled != null)
+//				return PhrasesShuffled.Length;
+//			return nextPhraseIndex;
 		}
 	}
 
 	public int PhraseCount {
 		get {
-			if (PhrasesShuffled == null)
-				return 0;
-			
-			return PhrasesShuffled.Length;
+			if (ShortPhrases == null || LongPhrases == null)
+				return 1337;
+			return ShortPhrases.Length + LongPhrases.Length;
+//			if (PhrasesShuffled == null)
+//				return 0;
+//			
+//			return PhrasesShuffled.Length;
 		}
+	}
+
+	Phrase[] GetShortPhrases() {
+		return Phrases.Where(x => x.Quote.Length < Settings.Instance.PhraseThreshold).AsRandom().ToArray();
+	}
+
+	Phrase[] GetLongPhrases() {
+		return Phrases.Where(x => x.Quote.Length >= Settings.Instance.PhraseThreshold).AsRandom().ToArray();
+	}
+
+	Phrase[] ShortPhrases;
+	Phrase[] LongPhrases;
+	int ShortPhraseIndex;
+	int LongPhraseIndex;
+
+	public Phrase GetNextShortPhrase() {
+		OnNewPhrase();
+
+		Phrase phrase = ShortPhrases[ShortPhraseIndex];
+		ShortPhraseIndex = (ShortPhraseIndex + 1) % ShortPhrases.Length;
+		return phrase;
+	}
+
+	public Phrase GetNextLongPhrase() {
+		OnNewPhrase();
+
+		Phrase phrase = LongPhrases[LongPhraseIndex];
+		LongPhraseIndex = (LongPhraseIndex + 1) % LongPhrases.Length;
+		return phrase;
 	}
 
 	Phrase[] PickPhrases() {
 //		var quotesOrdered;
+
+		ShortPhrases = GetShortPhrases();
+		LongPhrases = GetLongPhrases();
 
 		if (Settings.Instance.TonyMod)
 			return TonyPhrases;
@@ -507,7 +550,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		if (Settings.Instance.LongestQuotesOnly)
 			return Phrases.OrderByDescending(x => x.Quote.Length).Take(Settings.Instance.QuotesPerGame).ToArray();
 
-		var quotes = Phrases.AsRandom().Take(Settings.Instance.QuotesPerGame);
+		var quotes = Phrases.Where(x => x.Quote.Length >= 250).AsRandom(); //.Take(Settings.Instance.QuotesPerGame);
 		if (Settings.Instance.SortQuotes)
 			quotes = quotes.OrderBy(x => x.Quote.Length);
 

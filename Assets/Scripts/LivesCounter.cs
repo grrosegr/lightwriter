@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-public class LivesCounter : MyMonoBehaviour {
+public class LivesCounter : Singleton<LivesCounter> {
 
-	IList<char> mistakes;
+	IList<char> mistakes = new List<char>();
 	int lives;
 
 	// Use this for initialization
@@ -25,29 +26,57 @@ public class LivesCounter : MyMonoBehaviour {
 			if (len > 500)
 				lives = 8;
 			else if (len > 400)
-				lives = 6;
+				lives = 7;
 			else if (len > 300)
-				lives = 5;
+				lives = 6;
 			else if (len > 200)
-				lives = 4;
-			else if (len > 100)
-				lives = 3;
+				lives = 5;
 			else
-				lives = 2;
+				lives = 4;
 		} else {
 			lives = 4;
 		}
+		lives += 2;
 
-//		Mathf.Max(
+		var underscores = string.Format("<color={0}>{1}</color>", Settings.Instance.UnfillableColor, new string('_', Mathf.Max(0, lives - mistakes.Count)));
 
-//		myText.text = 
+		myText.text = string.Join("", mistakes.Select(x => x.ToString()).ToArray()) + underscores;
 	}
 
 	void OnMistake(char incorrect) {
-//		mistakes
+		if (!myText.enabled)
+			return;
+		
+		char canonical = char.ToUpperInvariant(incorrect);
+
+		if (mistakes.Contains(canonical)) {
+			myAudio.PlayOneShot(AssetHolder.Instance.SoftIncorrect);
+			return;
+		}
+
+		myAudio.PlayOneShot(AssetHolder.Instance.Incorrect, 0.2f);
+		mistakes.Add(canonical);
+		Draw();
+
+		if (mistakes.Count >= lives) {
+			Writer.Instance.FailQuote();
+			return;
+		}
+		
+
 	}
 
 	void OnNewLevel() {
+		mistakes.Clear();
+		Draw();
+	}
 
+	public void Deactivate() {
+		myText.enabled = false;
+	}
+
+	public void Activate() {
+		myText.enabled = true;
+		OnNewLevel();
 	}
 }
