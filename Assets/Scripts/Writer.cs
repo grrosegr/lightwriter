@@ -84,11 +84,16 @@ public class Writer : Singleton<Writer> {
 			Countdown.Instance.MaxTime = Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
 			Countdown.Instance.Activate();
 			LivesCounter.Instance.Deactivate();
+			slowMusic.Stop();
+			fastMusic.Play();
 
 		} else {
 			CurrentPhrase = PhraseSelector.Instance.GetNextShortPhrase();
 			Countdown.Instance.Deactivate();
 			LivesCounter.Instance.Activate();
+
+			slowMusic.Play();
+			fastMusic.Stop();
 		}
 
 //		CurrentPhrase = PhraseSelector.Instance.GetNextPhrase();
@@ -109,8 +114,14 @@ public class Writer : Singleton<Writer> {
 		Redraw();
 	}
 
+
+	AudioSource slowMusic;
+	AudioSource fastMusic;
+
 	void Awake() {
 		sourceText = GameObject.Find("Source").GetComponent<Text>();
+		slowMusic = GameObject.Find("SlowMusic").GetComponent<AudioSource>();
+		fastMusic = GameObject.Find("FastMusic").GetComponent<AudioSource>();
 	}
 
 	Text sourceText;
@@ -224,11 +235,13 @@ public class Writer : Singleton<Writer> {
 	float continueAfterFailingTime;
 	public void FailQuote() {
 		quoteFailed = true;
-		continueAfterFailingTime = Time.time + 1.0f;
+		continueAfterFailingTime = Time.time + Settings.Instance.LevelChangeWait;
 //		finishTimerStarted = true;
 //		finishTime = Time.time + NextLevelChange;
 		myAudio.PlayOneShot(AssetHolder.Instance.Lose);
 		Redraw();
+		fastMusic.Stop();
+		slowMusic.Stop();
 	}
 
 	char nonspaceToUnderscore(char x) {
@@ -318,7 +331,7 @@ public class Writer : Singleton<Writer> {
 			return;
 
 		if (quoteFailed) {
-			if (Input.anyKeyDown && Time.time > continueAfterFailingTime) {
+			if (Input.GetKeyDown(KeyCode.Space) && Time.time > continueAfterFailingTime) {
 				LoadNewLevel();
 			}
 			return;
@@ -331,13 +344,15 @@ public class Writer : Singleton<Writer> {
 //					LoadNewLevel();
 //				}
 
-				if (Input.anyKeyDown)
+				if (Input.GetKeyDown(KeyCode.Space))
 					LoadNewLevel();
 			} else {
-				finishTime = Time.time + NextLevelChange;
+				finishTime = Time.time + Settings.Instance.LevelChangeWait;
 				finishTimerStarted = true;
 				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
+				fastMusic.Stop();
+				slowMusic.Stop();
 			}
 		}			
 

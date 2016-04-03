@@ -36,4 +36,6 @@ public class Settings : Singleton<Settings> {
 	public float TimePerChar = 0.1f;
 
 	public bool Tick;
+
+	public float LevelChangeWait = 2.0f;
 }

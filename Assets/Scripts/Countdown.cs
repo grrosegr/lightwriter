@@ -53,7 +53,7 @@ public class Countdown : Singleton<Countdown> {
 			int timeLeft = Mathf.Max(0, (int)(MaxTime - (Time.time - startTime)));
 			if (Settings.Instance.Tick && timeLeft != lastTime) {
 				lastTime = timeLeft;
-				myAudio.PlayOneShot(AssetHolder.Instance.Tick, 0.4f);
+				myAudio.PlayOneShot(AssetHolder.Instance.Tick, 0.6f);
 			}
 
 			myText.text = timeLeft.ToString();
