@@ -406,14 +406,14 @@ MonoBehaviour:
   LastFilledColor: '#3FEE82FF'
   SortQuotes: 1
   NewestQuotesOnly: 0
-  InitialHintsRatio: 0.6
+  InitialHintsRatio: 0.65
   BrowseMode: 0
   TonyMod: 0
   PhraseThreshold: 125
   SwitchProbability: 0.85
   MinTime: 10
   MaxTime: 50
-  TimePerChar: 0.15
+  TimePerChar: 0.125
   Tick: 1
   LevelChangeWait: 2
 --- !u!4 &436381789

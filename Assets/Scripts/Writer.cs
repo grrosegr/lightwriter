@@ -82,7 +82,7 @@ public class Writer : Singleton<Writer> {
 
 		if (isFastMode) {
 			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
-			Countdown.Instance.MaxTime = 3;// Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
+			Countdown.Instance.MaxTime =  Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
 			Countdown.Instance.Activate();
 			LivesCounter.Instance.Deactivate();
 			slowMusic.Pause();
