@@ -226,25 +226,25 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		new Phrase("A wet man does not fear the rain.", 
 			"Anonymous", 
 		""),
-		new Phrase("Do not try and bend the spoon. That's impossible. Instead... only try to realize the truth.",
+		new Phrase("Do not try and bend the spoon. That's impossible. Instead... only try to realize the truth. There is no spoon.",
 			"The Matrix",
 			""),
 		new Phrase("You take the blue pill - the story ends, you wake up in your bed and believe whatever you want to believe. You take the red pill - you stay in Wonderland and I show you how deep the rabbit-hole goes.",
 			"Morpheus",
-			"The Matrix"),
+			"The Matrix (1999)"),
 		new Phrase("Have you ever had a dream, Neo, that you were so sure was real? What if you were unable to wake from that dream? How would you know the difference between the dream world and the real world?",
 			"Morpheus",
-			"The Matrix"),
+			"The Matrix (1999)"),
 		new Phrase("Let me tell you why you're here. You're here because you know something. What you know you can't explain, but you feel it. You've felt it your entire life, that there's something wrong with the world. You don't know what it is, but it's there, like a splinter in your mind, driving you mad. It is this feeling that has brought you to me.",
 			"Morpheus",
-			"The Matrix"),
+			"The Matrix (1999)"),
 		// http://www.buzzfeed.com/morenikeadebayo/surprisingly-heartwarming-pokemon-games-best-advice#.klQRz5AJk
 		new Phrase("All dreams are but another reality. Never forget...",
 			"A Signpost on Southern Island",
 			"Pokemon Ruby"),
-		new Phrase("Those whose memories fade seek to carve them in their hearts...",
-			"A Signpost on Southern Island",
-			"Pokemon Ruby"),
+//		new Phrase("Those whose memories fade seek to carve them in their hearts...",
+//			"A Signpost on Southern Island",
+//			"Pokemon Ruby"),
 		new Phrase("The more wonderful the meeting, the sadder the parting.",
 			"Looker on Stark Mountain",
 			"Pokémon Diamond and Pearl"),
@@ -314,6 +314,8 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		new Phrase("May the Force be with you.",
 			"",
 			"Star Wars"),
+		new Phrase("Luke, I am your father.",
+			"Star Wars: Episode V – The Empire Strikes Back"),
 		new Phrase("Open the pod bay doors, HAL.",
 			"Dave Bowman",
 			"2001: A Space Odyssey (1968)"),
@@ -435,7 +437,10 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 			"Alan Turing"),
 		new Phrase("If a machine is expected to be infallible, it cannot also be intelligent.",
 			"Alan Turing"),
-		
+
+		new Phrase("Look, if you had one shot or one opportunity / To seize everything you ever wanted in one moment/ Would you capture it or just let it slip? / Yo", "Eminem", "Lose Yourself"),
+
+			
 	};
 
 	readonly Phrase[] TonyPhrases = new Phrase[] {
@@ -523,7 +528,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 	}
 
 	Phrase[] GetLongPhrases() {
-		return Phrases.Where(x => x.Quote.Length >= Settings.Instance.PhraseThreshold).AsRandom().ToArray();
+		return Phrases.Where(x => x.Quote.Length >= Settings.Instance.PhraseThreshold && x.Quote.Length <= Settings.Instance.MaxLongQuoteLength).AsRandom().ToArray();
 	}
 
 	Phrase[] ShortPhrases;
@@ -555,6 +560,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 		ShortPhrases = GetShortPhrases();
 		LongPhrases = GetLongPhrases();
+		Debug.LogFormat("{0} short phrases, {1} long phrases", ShortPhrases.Length, LongPhrases.Length);
 
 		if (Settings.Instance.TonyMod)
 			return TonyPhrases;

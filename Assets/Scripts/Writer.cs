@@ -99,7 +99,6 @@ public class Writer : Singleton<Writer> {
 
 //		CurrentPhrase = PhraseSelector.Instance.GetNextPhrase();
 		desiredWord = CurrentPhrase.Quote;
-		print(desiredWord.Length);
 		sourceText.text = CurrentPhrase.Source;
 		finishTimerStarted = false;
 		index = 0;
@@ -163,8 +162,8 @@ public class Writer : Singleton<Writer> {
 		char[] mask = wordMask.ToCharArray();
 
 		// REQUIRES: mask[index] == '_'
-		if (mask[index] != '_')
-			Debug.LogWarning("Mask at " + index + " is not _, but " + mask[index]);
+//		if (mask[index] != '_')
+//			Debug.LogWarning("Mask at " + index + " is not _, but " + mask[index]);
 
 		bool found = false;
 

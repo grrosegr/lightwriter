@@ -38,4 +38,6 @@ public class Settings : Singleton<Settings> {
 	public bool Tick;
 
 	public float LevelChangeWait = 2.0f;
+
+	public int MaxLongQuoteLength = 400;
 }
