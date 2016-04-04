@@ -82,6 +82,9 @@ public class Writer : Singleton<Writer> {
 		if (Random.value < Settings.Instance.SwitchProbability)
 			isFastMode = !isFastMode;
 
+		if (PhraseSelector.Instance.PhraseNumber == 0)
+			isFastMode = false; // first quote is always slow
+
 		if (isFastMode) {
 			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
 			float maxTime = CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar;
