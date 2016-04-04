@@ -72,7 +72,8 @@ public class Writer : Singleton<Writer> {
 
 	bool isFastMode;
 
-	float lastLevelStart;
+	bool speedTutorialShown;
+	bool accuracyTutorialShown;
 
 	void LoadNewLevel() {
 		pressSpace.enabled = false;
@@ -86,6 +87,10 @@ public class Writer : Singleton<Writer> {
 			isFastMode = false; // first quote is always slow
 
 		if (isFastMode) {
+			speedInfo.SetActive(!speedTutorialShown);
+			accuracyInfo.SetActive(false);
+			speedTutorialShown = true;
+
 			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
 			float maxTime = CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar;
 			maxTime += Settings.Instance.BonusTime;
@@ -99,6 +104,10 @@ public class Writer : Singleton<Writer> {
 			fastMusic.Play();
 
 		} else {
+			speedInfo.SetActive(false);
+			accuracyInfo.SetActive(!accuracyTutorialShown);
+			accuracyTutorialShown = true;
+
 			CurrentPhrase = PhraseSelector.Instance.GetNextShortPhrase();
 			Countdown.Instance.Deactivate();
 			LivesCounter.Instance.Activate();
@@ -118,7 +127,6 @@ public class Writer : Singleton<Writer> {
 		RevealLetters(Mathf.FloorToInt(wordMask.Count(x => x == '_') * Settings.Instance.InitialHintsRatio));
 		nextRevealTime = Time.time + RevealRate;
 		OnNewLevel();
-		lastLevelStart = Time.time;
 	}
 
 	public void Stop() {
@@ -130,10 +138,15 @@ public class Writer : Singleton<Writer> {
 	AudioSource slowMusic;
 	AudioSource fastMusic;
 
+	GameObject speedInfo;
+	GameObject accuracyInfo;
+
 	void Awake() {
 		sourceText = GameObject.Find("Source").GetComponent<Text>();
 		slowMusic = GameObject.Find("SlowMusic").GetComponent<AudioSource>();
 		fastMusic = GameObject.Find("FastMusic").GetComponent<AudioSource>();
+		speedInfo = GameObject.Find("Info").transform.Find("SpeedInfo").gameObject;
+		accuracyInfo = GameObject.Find("Info").transform.Find("AccuracyInfo").gameObject;
 	}
 
 	Text sourceText;
@@ -374,8 +387,6 @@ public class Writer : Singleton<Writer> {
 				finishTimerStarted = true;
 				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
-//				if (CurrentPhrase != null)
-//					Debug.Log(CurrentPhrase.Quote.Length + " , " + (Time.time - lastLevelStart)); 
 				
 				fastMusic.Pause();
 				slowMusic.Pause();
