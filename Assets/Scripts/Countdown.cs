@@ -7,15 +7,8 @@ public class Countdown : Singleton<Countdown> {
 	public bool CountUp = true;
 
 	float startTime;
-	bool hasStopped = false;
 
 	public bool Paused;
-
-	Writer writer;
-
-	void Awake() {
-		writer = FindObjectOfType<Writer>();
-	}
 
 	// Use this for initialization
 	void Start () {
@@ -62,11 +55,6 @@ public class Countdown : Singleton<Countdown> {
 				Writer.Instance.FailQuote();
 				Paused = true;
 			}
-
-//			if (!hasStopped && timeLeft == 0) {
-//				hasStopped = true;
-//				writer.Stop();
-//			}
 		}
 
 	}

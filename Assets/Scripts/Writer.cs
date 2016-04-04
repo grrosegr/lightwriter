@@ -72,6 +72,8 @@ public class Writer : Singleton<Writer> {
 
 	bool isFastMode;
 
+	float lastLevelStart;
+
 	void LoadNewLevel() {
 		pressSpace.enabled = false;
 		quoteFailed = false;
@@ -82,7 +84,12 @@ public class Writer : Singleton<Writer> {
 
 		if (isFastMode) {
 			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
-			Countdown.Instance.MaxTime =  Mathf.Min(Settings.Instance.MaxTime, Mathf.Max(Settings.Instance.MinTime, (int)(CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar)));
+			float maxTime = CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar;
+			maxTime += Settings.Instance.BonusTime;
+			maxTime = Mathf.Max(Settings.Instance.MinTime, maxTime);
+			maxTime = Mathf.Min(Settings.Instance.MaxTime, maxTime);
+
+			Countdown.Instance.MaxTime = Mathf.RoundToInt(maxTime);
 			Countdown.Instance.Activate();
 			LivesCounter.Instance.Deactivate();
 			slowMusic.Pause();
@@ -108,6 +115,7 @@ public class Writer : Singleton<Writer> {
 		RevealLetters(Mathf.FloorToInt(wordMask.Count(x => x == '_') * Settings.Instance.InitialHintsRatio));
 		nextRevealTime = Time.time + RevealRate;
 		OnNewLevel();
+		lastLevelStart = Time.time;
 	}
 
 	public void Stop() {
@@ -363,6 +371,9 @@ public class Writer : Singleton<Writer> {
 				finishTimerStarted = true;
 				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
+//				if (CurrentPhrase != null)
+//					Debug.Log(CurrentPhrase.Quote.Length + " , " + (Time.time - lastLevelStart)); 
+				
 				fastMusic.Pause();
 				slowMusic.Pause();
 			}
@@ -393,24 +404,7 @@ public class Writer : Singleton<Writer> {
 				}
 
 				RevealMatchingLetters(c);
-				
-//				if (char.ToLower(c) == char.ToLower(desiredWord[index])) {
-//					IncrementLetter();
-//				} else {
-//					incorrectKeysRemaining -= 1;
-//					if (incorrectKeysRemaining <= 0) {
-//						IncrementLetter();
-//						ResetIncorrectKeys();
-//					}
-//				}
-//
-//				Redraw();
 			}
-
-
-
 		}
-			
-	
 	}
 }

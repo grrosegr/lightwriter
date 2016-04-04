@@ -404,7 +404,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 		new Phrase("What is the most resilient parasite? Bacteria? A virus? An intestinal worm? An idea. Resilient... highly contagious. Once an idea has taken hold of the brain it's almost impossible to eradicate. An idea that is fully formed - fully understood - that sticks; right in there somewhere.",
 			"Cobb",
 			"Inception (2010)"),
-		new Phrase("The shadow of the ruins looms above, filling you with determination.",
+		new Phrase("Knowing the mouse might one day extract the cheese from the mystical crystal... It fills you with determination.",
 			"Undertale",
 			""),
 		new Phrase("Knowing the mouse might one day leave its hole and get the cheese... It fills you with determination.",
@@ -440,7 +440,12 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 		new Phrase("Look, if you had one shot or one opportunity / To seize everything you ever wanted in one moment/ Would you capture it or just let it slip? / Yo", "Eminem", "Lose Yourself"),
 
-			
+		new Phrase("For every age there is a time of trial. The rocks faced such a fire before they were the strength beneath our feet. The plants braved vast winds before their roots could give us life. As a sage of considerable years, I have known only one such great ordeal. Yet the hero it created was a champion of all time.",
+			"Samos the Sage",
+			"Jak and Daxter: The Precursor Legacy (2001)"),
+
+		new Phrase("Happiness is the absence of the striving for happiness.",
+			"Chuang Tzu"),
 	};
 
 	readonly Phrase[] TonyPhrases = new Phrase[] {

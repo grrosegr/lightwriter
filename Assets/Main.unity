@@ -412,11 +412,12 @@ MonoBehaviour:
   PhraseThreshold: 100
   SwitchProbability: 0.85
   MinTime: 10
-  MaxTime: 50
-  TimePerChar: 0.125
+  MaxTime: 9999
+  TimePerChar: 0.11
   Tick: 1
   LevelChangeWait: 2
-  MaxLongQuoteLength: 400
+  MaxLongQuoteLength: 500
+  TimeBonus: 10
 --- !u!4 &436381789
 Transform:
   m_ObjectHideFlags: 0

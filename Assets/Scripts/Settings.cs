@@ -40,4 +40,6 @@ public class Settings : Singleton<Settings> {
 	public float LevelChangeWait = 2.0f;
 
 	public int MaxLongQuoteLength = 400;
+
+	public float TimeBonus = 10.0f;
 }
