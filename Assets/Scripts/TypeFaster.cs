@@ -11,11 +11,14 @@ public class TypeFaster : Singleton<TypeFaster> {
 
 	// Use this for initialization
 	void Start () {
-	
+		GameManager.StateChanged += OnGameStateChanged;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		if (GameManager.GameState == GameState.GameOver)
+			return;
+
 		float remainingFraction = Writer.Instance.LettersRemaining / (float)Writer.Instance.CurrentPhrase.Quote.Length;
 
 		bool activated = Writer.Instance.IsFastMode && Typometer.Instance.CharsPerSecond <= 10 && remainingFraction > 0.2f;
@@ -35,5 +38,11 @@ public class TypeFaster : Singleton<TypeFaster> {
 			}
 		}
 	
+	}
+
+	void OnGameStateChanged(GameState newGameState) {
+		if (newGameState == GameState.GameOver) {
+			myText.enabled = false;
+		}
 	}
 }

@@ -399,7 +399,7 @@ MonoBehaviour:
   BonusTime: 3
   QuotesPerGame: 15
   LongestQuotesOnly: 0
-  FillableColor: '#FF8F8FFF'
+  FillableColor: '#81BCFFFF'
   HighlightFillable: 1
   UnfillableColor: '#494949FF'
   ColorLastFilled: 0
@@ -413,13 +413,13 @@ MonoBehaviour:
   SwitchProbability: 0.85
   MinTime: 10
   MaxTime: 9999
-  TimePerChar: 0.11
+  TimePerChar: 0.16
   Tick: 1
   LevelChangeWait: 1
   MaxLongQuoteLength: 500
-  TimeBonus: 10
+  TimeBonus: 14
   ColorAllFilled: 1
-  FilledColor: green
+  FilledColor: '#1EEF2EFF'
   SpeedHintsRatio: 0
 --- !u!4 &436381789
 Transform:
@@ -1943,7 +1943,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: '<color=#2753FFFF>Accuracy mode:</color>
 
-    <color=#FF8F8FFF>_</color> first missing occurrence of a letter
+    <color=#81BCFFFF>_</color> first missing occurrence of a letter
 
     <color=#494949FF>_</color> further missing occurrence of a letter'
 --- !u!222 &1679396962
