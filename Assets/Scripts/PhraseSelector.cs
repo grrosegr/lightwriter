@@ -319,9 +319,9 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 			"Star Wars"),
 		new Phrase("Luke, I am your father.",
 			"Star Wars: Episode V – The Empire Strikes Back"),
-		new Phrase("Open the pod bay doors, HAL.",
-			"Dave Bowman",
-			"2001: A Space Odyssey (1968)"),
+//		new Phrase("Open the pod bay doors, HAL.",
+//			"Dave Bowman",
+//			"2001: A Space Odyssey (1968)"),
 		new Phrase("I will not make any deals with you. I've resigned. I will not be pushed, filed, stamped, indexed, briefed, debriefed, or numbered! My life is my own!",
 			"Number Six",
 			"The Prisoner (1967)"),
@@ -449,6 +449,9 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 
 		new Phrase("Happiness is the absence of the striving for happiness.",
 			"Chuang Tzu"),
+
+		new Phrase("And now that you don't have to be perfect, you can be good.",
+			"John Steinbeck"),
 	};
 
 	readonly Phrase[] TonyPhrases = new Phrase[] {
