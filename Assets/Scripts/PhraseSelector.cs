@@ -38,6 +38,9 @@ public class Phrase {
 		this.Quote = quote;
 		this.author = author;
 		this.work = work;
+		if (work != null && work.Contains("(") && !work.Contains(")")) {
+			Debug.Log("missing ( for " + quote);
+		}
 	}
 
 	private bool IsGood(string s) {
@@ -253,7 +256,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 			"The Usual Suspects (1995)"),
 		new Phrase("I'm going to make him an offer he can't refuse.",
 			"Vito Corleone",
-			"The Godfather (1972"),
+			"The Godfather (1972)"),
 		new Phrase("Oh, don't be silly darling, everyone wants this. Everyone wants to be us.",
 			"Miranda Priestly",
 			"The Devil Wears Prada (2006)"),
@@ -367,7 +370,7 @@ public class PhraseSelector : Singleton<PhraseSelector> {
 			"Harry Potter and the Prisoner of Azkaban"),
 		new Phrase("The cold never bothered me anyway.",
 			"Esla",
-			"Frozen (2013"),
+			"Frozen (2013)"),
 		new Phrase("I'm bad, and that's good. I will never be good, and that's not bad. There's no one I'd rather be than me.",
 			"Wreck-It Ralph",
 			"Wreck-It Ralph (2012)"),

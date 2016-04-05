@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
 using System.Text;
+using UnityEngine.SceneManagement;
 
 public class Writer : Singleton<Writer> {
 
@@ -48,7 +49,6 @@ public class Writer : Singleton<Writer> {
 	float finishTime;
 
 	float nextRevealTime;
-	bool stopped = false;
 
 	int correctLetters;
 	int totalLetters;
@@ -69,6 +69,8 @@ public class Writer : Singleton<Writer> {
 
 	bool[] originallyHidden = new bool[1];
 
+	bool gameOver;
+
 	void LoadNewLevel() {
 		pressSpace.enabled = false;
 		quoteFailed = false;
@@ -79,6 +81,16 @@ public class Writer : Singleton<Writer> {
 
 		if (PhraseSelector.Instance.PhraseNumber == 0)
 			IsFastMode = false; // first quote is always slow
+
+		if (PhraseSelector.Instance.PhraseNumber == PhraseSelector.Instance.PhraseCount) {
+			GameManager.GameState = GameState.GameOver;
+			slowMusic.Pause();
+			fastMusic.Pause();
+			Countdown.Instance.Deactivate();
+			LivesCounter.Instance.Deactivate();
+			Redraw();
+			return;
+		}
 
 		if (IsFastMode) {
 			speedInfo.SetActive(!speedTutorialShown);
@@ -118,17 +130,12 @@ public class Writer : Singleton<Writer> {
 		sourceText.text = CurrentPhrase.Source;
 		finishTimerStarted = false;
 		RegenMask();
-		Redraw();
 		LettersRemaining = wordMask.Count(x => x == '_');
 		float hintRatio = IsFastMode ? Settings.Instance.SpeedHintsRatio : Settings.Instance.InitialHintsRatio;
 		RevealLetters(Mathf.FloorToInt(LettersRemaining * hintRatio));
 		originallyHidden = wordMask.Select(x => x == '_').ToArray();
 		nextRevealTime = Time.time + RevealRate;
 		OnNewLevel();
-	}
-
-	public void Stop() {
-		stopped = true;
 		Redraw();
 	}
 
@@ -249,6 +256,7 @@ public class Writer : Singleton<Writer> {
 	public void FailQuote() {
 		pressSpace.enabled = true;
 		quoteFailed = true;
+		incorrectQuotes += 1;
 		continueAfterFailingTime = Time.time + Settings.Instance.LevelChangeWait;
 		myAudio.PlayOneShot(AssetHolder.Instance.Lose);
 		Redraw();
@@ -263,11 +271,36 @@ public class Writer : Singleton<Writer> {
 			return '_';
 	}
 
+	int normalMaxSize = 68;
+	int gameOverMaxSize = 40;
+	string pressSpaceText = "Press Space to Continue";
+	int correctQuotes;
+	int incorrectQuotes;
+
 	void Redraw() {
-		if (stopped) {
-			myText.text = "Game Over!";
+		if (GameManager.GameState == GameState.GameOver) {
+			myText.text = string.Format(
+				"Game completed!"
+				+ "\nPeak Speed: <color=#2753FFFF>{0}</color> letters/second"
+				+ "\nCorrect Quotes: <color=green>{1}</color>"
+				+ "\nIncorrect Quotes: <color=red>{2}</color>",
+				Mathf.RoundToInt((float)Typometer.Instance.PeakCPS),
+				correctQuotes,
+				incorrectQuotes
+			);
+			normalMaxSize = myText.resizeTextMaxSize;
+			myText.resizeTextMaxSize = gameOverMaxSize;
+			pressSpaceText = pressSpace.text;
+			pressSpace.text = "Press Space to Restart";
+			pressSpace.enabled = true;
+			sourceText.enabled = false;
 			return;
 		}
+
+		myText.resizeTextMaxSize = normalMaxSize;
+		pressSpace.text = pressSpaceText;
+
+		sourceText.enabled = true;
 
 		if (Settings.Instance.BrowseMode) {
 			myText.text = desiredWord;
@@ -328,8 +361,13 @@ public class Writer : Singleton<Writer> {
 	
 	// Update is called once per frame
 	void Update () {
-		if (stopped)
+		if (GameManager.GameState == GameState.GameOver) {
+			if (Input.GetKeyDown(KeyCode.Space)) {
+				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+			}
+
 			return;
+		}
 
 		if (quoteFailed) {
 			if (Input.GetKeyDown(KeyCode.Space) && Time.time > continueAfterFailingTime) {
@@ -352,6 +390,7 @@ public class Writer : Singleton<Writer> {
 				finishTimerStarted = true;
 				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
+				correctQuotes += 1;
 				
 				fastMusic.Pause();
 				slowMusic.Pause();
@@ -363,6 +402,9 @@ public class Writer : Singleton<Writer> {
 
 		if (Input.GetKeyDown(KeyCode.F12))
 			LoadNewLevel();
+
+		if (Input.GetKeyDown(KeyCode.F2))
+			FailQuote();
 
 		if (AutoReveal && Time.time > nextRevealTime) {
 			RevealLetters(1);

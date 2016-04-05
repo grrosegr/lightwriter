@@ -12,6 +12,7 @@ public class Score : Singleton<Score> {
 	void Start () {
 		text = GetComponent<Text>();
 		Redraw();
+		GameManager.StateChanged += OnGameStateChanged;
 	}
 
 	void Redraw() {
@@ -31,5 +32,13 @@ public class Score : Singleton<Score> {
 	void Update () {
 		Redraw();
 	
+	}
+
+	void OnGameStateChanged(GameState newGameState) {
+		if (newGameState == GameState.GameOver) {
+			myText.enabled = false;
+		} else {
+			myText.enabled = true;
+		}
 	}
 }

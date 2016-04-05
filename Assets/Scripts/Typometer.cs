@@ -11,6 +11,8 @@ public class Typometer : Singleton<Typometer> {
 
 	public double CharsPerSecond {get; private set;}
 
+	public double PeakCPS {get; private set;}
+
 	// Use this for initialization
 	void Start () {
 	
@@ -21,6 +23,10 @@ public class Typometer : Singleton<Typometer> {
 		md.AddSample(Input.inputString.Length, Time.deltaTime);
 
 		CharsPerSecond = smooth.SmoothValue(md.GetDerivative());
+		if (CharsPerSecond > PeakCPS) {
+			PeakCPS = CharsPerSecond;
+		}
+
 		// WolframAlpha: English has average of 5.1 characters/word
 //		double wpm = 60 * charsPerSec / 5.1;
 
