@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Typometer : MyMonoBehaviour {
+public class Typometer : Singleton<Typometer> {
 
 	// TODO: smooth out movement
 	readonly MovingDerivative md = new MovingDerivative(40);
 	readonly MovingAverage smooth = new MovingAverage(40);
 
 	const int MaxCPS = 40;
+
+	public double CharsPerSecond {get; private set;}
 
 	// Use this for initialization
 	void Start () {
@@ -18,13 +20,13 @@ public class Typometer : MyMonoBehaviour {
 	void Update () {
 		md.AddSample(Input.inputString.Length, Time.deltaTime);
 
-		double charsPerSec = smooth.SmoothValue(md.GetDerivative());
+		CharsPerSecond = smooth.SmoothValue(md.GetDerivative());
 		// WolframAlpha: English has average of 5.1 characters/word
 //		double wpm = 60 * charsPerSec / 5.1;
 
 //		myText.text = ((int)charsPerSec).ToString();
 
-		float cpsNormalized = Mathf.Clamp((float)charsPerSec, 0f, MaxCPS);
+		float cpsNormalized = Mathf.Clamp((float)CharsPerSecond, 0f, MaxCPS);
 
 		Vector3 rot = transform.eulerAngles;
 		rot.z = - 180 * cpsNormalized / MaxCPS;

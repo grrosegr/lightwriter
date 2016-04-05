@@ -7,6 +7,8 @@ using System.Text;
 
 public class Writer : Singleton<Writer> {
 
+	const string ColorFormatString = "<color={0}>{1}</color>";
+
 	// Events
 
 	public event System.Action NewLevel;
@@ -42,8 +44,6 @@ public class Writer : Singleton<Writer> {
 
 	string wordMask = "";
 
-	int index = 0;
-
 	bool finishTimerStarted;
 	float finishTime;
 
@@ -53,6 +53,8 @@ public class Writer : Singleton<Writer> {
 	int correctLetters;
 	int totalLetters;
 
+	public int LettersRemaining {get; private set;}
+
 	public float GetAccuracy() {
 		if (totalLetters == 0)
 			return 0;
@@ -60,20 +62,12 @@ public class Writer : Singleton<Writer> {
 		return correctLetters / (float)totalLetters;
 	}
 
-//	GameObject Canvas;
-
-	// inclusive bounds
-//	int incorrectKeysRemaining = MaxIncorrectKeysToGuess;
-
-	void ResetIncorrectKeys() {
-		// +1 for inclusiveness
-//		incorrectKeysRemaining = Random.Range(MinIncorrectKeysToGuess, MaxIncorrectKeysToGuess + 1);
-	}
-
-	bool isFastMode;
+	public bool IsFastMode {get; private set;}
 
 	bool speedTutorialShown;
 	bool accuracyTutorialShown;
+
+	bool[] originallyHidden = new bool[1];
 
 	void LoadNewLevel() {
 		pressSpace.enabled = false;
@@ -81,27 +75,30 @@ public class Writer : Singleton<Writer> {
 		lastFilledIndex = -1;
 
 		if (Random.value < Settings.Instance.SwitchProbability)
-			isFastMode = !isFastMode;
+			IsFastMode = !IsFastMode;
 
 		if (PhraseSelector.Instance.PhraseNumber == 0)
-			isFastMode = false; // first quote is always slow
+			IsFastMode = false; // first quote is always slow
 
-		if (isFastMode) {
+		if (IsFastMode) {
 			speedInfo.SetActive(!speedTutorialShown);
 			accuracyInfo.SetActive(false);
-			speedTutorialShown = true;
 
 			CurrentPhrase = PhraseSelector.Instance.GetNextLongPhrase();
 			float maxTime = CurrentPhrase.Quote.Length * Settings.Instance.TimePerChar;
 			maxTime += Settings.Instance.BonusTime;
 			maxTime = Mathf.Max(Settings.Instance.MinTime, maxTime);
 			maxTime = Mathf.Min(Settings.Instance.MaxTime, maxTime);
+			if (!speedTutorialShown)
+				maxTime += 10.0f; // Newbie Bonus
 
 			Countdown.Instance.MaxTime = Mathf.RoundToInt(maxTime);
 			Countdown.Instance.Activate();
 			LivesCounter.Instance.Deactivate();
 			slowMusic.Pause();
 			fastMusic.Play();
+
+			speedTutorialShown = true;
 
 		} else {
 			speedInfo.SetActive(false);
@@ -120,11 +117,12 @@ public class Writer : Singleton<Writer> {
 		desiredWord = CurrentPhrase.Quote;
 		sourceText.text = CurrentPhrase.Source;
 		finishTimerStarted = false;
-		index = 0;
 		RegenMask();
 		Redraw();
-		ResetIncorrectKeys();
-		RevealLetters(Mathf.FloorToInt(wordMask.Count(x => x == '_') * Settings.Instance.InitialHintsRatio));
+		LettersRemaining = wordMask.Count(x => x == '_');
+		float hintRatio = IsFastMode ? Settings.Instance.SpeedHintsRatio : Settings.Instance.InitialHintsRatio;
+		RevealLetters(Mathf.FloorToInt(LettersRemaining * hintRatio));
+		originallyHidden = wordMask.Select(x => x == '_').ToArray();
 		nextRevealTime = Time.time + RevealRate;
 		OnNewLevel();
 	}
@@ -183,19 +181,18 @@ public class Writer : Singleton<Writer> {
 	int lastFilledIndex = -1;
 
 	void RevealMatchingLetters(char c) {
-		char[] mask = wordMask.ToCharArray();
+		if (LettersRemaining <= 0)
+			return;
 
-		// REQUIRES: mask[index] == '_'
-//		if (mask[index] != '_')
-//			Debug.LogWarning("Mask at " + index + " is not _, but " + mask[index]);
+		char[] mask = wordMask.ToCharArray();
 
 		bool found = false;
 
-		for (int i = index; i < wordMask.Length; i++) {
+		for (int i = 0; i < wordMask.Length; i++) {
 			if (mask[i] == '_' && char.ToLower(desiredWord[i]) == char.ToLower(c)) {
 				mask[i] = desiredWord[i];
+				LettersRemaining -= 1;
 				lastFilledIndex = i;
-//				Score.Instance.Increment(1);
 				found = true;
 				if (!GlobalReplace)
 					break;
@@ -212,30 +209,19 @@ public class Writer : Singleton<Writer> {
 
 		wordMask = new string(mask);
 
-		SkipIndexToNextBlank();
 		Redraw();
 	}
 
 	void RevealLetters(int num) {
 		char[] mask = wordMask.ToCharArray();
-		int numUnrevealed = mask.Skip(index).Count(x => x == '_');
-		num = Mathf.Min(numUnrevealed, num);
-
-		if (index >= mask.Length) {
-			Debug.LogWarning("Cannot reveal letters, at end");
-			return;
-		}
-
-		// REQUIRES: mask[index] == '_'
-		if (mask[index] != '_')
-			Debug.LogWarning("Mask at " + index + " is not _, but " + mask[index]);
+		num = Mathf.Min(LettersRemaining, num);
 
 		// reveal num letters (or however many are left)
 		for (int i = 0; i < num; i++) {
 
 			// reveals indexToReveal (out of those that are unrevealed so far)
-			int indexToReveal = Random.Range(0, numUnrevealed);
-			int j = index;
+			int indexToReveal = Random.Range(0, LettersRemaining);
+			int j = 0;
 			int unrevealedIndex = 0;
 
 			while (j < mask.Length && (unrevealedIndex < indexToReveal || mask[j] != '_')) {
@@ -248,13 +234,13 @@ public class Writer : Singleton<Writer> {
 
 			if (j == mask.Length) {
 //				Debug.LogWarning("Hit end of letters! Looking for " + indexToReveal + ", made it to " + unrevealedIndex);	
-			} else if (unrevealedIndex == indexToReveal)
+			} else if (unrevealedIndex == indexToReveal) {
 				mask[j] = desiredWord[j];
+				LettersRemaining -= 1;
+			}
 		}
 
 		wordMask = new string(mask);
-
-		SkipIndexToNextBlank();
 		Redraw();
 	}
 
@@ -264,8 +250,6 @@ public class Writer : Singleton<Writer> {
 		pressSpace.enabled = true;
 		quoteFailed = true;
 		continueAfterFailingTime = Time.time + Settings.Instance.LevelChangeWait;
-//		finishTimerStarted = true;
-//		finishTime = Time.time + NextLevelChange;
 		myAudio.PlayOneShot(AssetHolder.Instance.Lose);
 		Redraw();
 		fastMusic.Pause();
@@ -288,19 +272,9 @@ public class Writer : Singleton<Writer> {
 		if (Settings.Instance.BrowseMode) {
 			myText.text = desiredWord;
 			return;
-		}			
+		}
 
-		string prefix = desiredWord.Substring(0, index);
-
-		string newMask = wordMask;
-
-		string suffix = "_";//"<color=green>_</color>";
-		if (index >= newMask.Length)
-			suffix = newMask.Substring(index);
-		else
-			suffix += newMask.Substring(index + 1);
-
-		string result = prefix + suffix;
+		string result = wordMask;
 
 		if (quoteFailed) {
 			myText.text = "<color=red>" + desiredWord + "</color>";
@@ -315,7 +289,7 @@ public class Writer : Singleton<Writer> {
 			}
 			result = builder.ToString();
 
-		} else if (index == desiredWord.Length) {
+		} else if (LettersRemaining <= 0) {
 			result = "<color=green>" + result + "</color>";
 		} else {
 
@@ -325,9 +299,13 @@ public class Writer : Singleton<Writer> {
 			for (int i = 0; i < result.Length; i++) {
 				if (result[i] != '_') {
 					if (i == lastFilledIndex && Settings.Instance.ColorLastFilled) 
-						builder.Append(string.Format("<color={0}>{1}</color>", Settings.Instance.LastFilledColor, result[i]));
-					else
+						builder.AppendFormat(ColorFormatString, Settings.Instance.LastFilledColor, result[i]);
+					else if (!IsFastMode && Settings.Instance.ColorAllFilled && i < originallyHidden.Length && originallyHidden[i]) {
+						builder.AppendFormat(ColorFormatString, Settings.Instance.FilledColor, result[i]);
+					} else {
 						builder.Append(result[i]);
+					}
+
 					continue;
 				} 
 
@@ -347,19 +325,6 @@ public class Writer : Singleton<Writer> {
 
 		myText.text = result;
 	}
-
-	void SkipIndexToNextBlank() {
-		// skip non-letter characters
-		while (index < desiredWord.Length && wordMask[index] != '_') {
-			index += 1;
-		}
-	}
-
-	void IncrementLetter() {
-		index += 1;
-
-		SkipIndexToNextBlank();
-	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -373,7 +338,7 @@ public class Writer : Singleton<Writer> {
 			return;
 		}
 
-		if (index >= desiredWord.Length || finishTimerStarted) {
+		if (LettersRemaining <= 0 || finishTimerStarted) {
 			
 			if (finishTimerStarted) {
 
@@ -411,11 +376,6 @@ public class Writer : Singleton<Writer> {
 			foreach (char c in Input.inputString) {
 				if (!char.IsLetter(c))
 					continue;
-				
-				if (index >= desiredWord.Length) {
-					index = 0;
-					return;
-				}
 
 				RevealMatchingLetters(c);
 			}

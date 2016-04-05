@@ -42,4 +42,9 @@ public class Settings : Singleton<Settings> {
 	public int MaxLongQuoteLength = 400;
 
 	public float TimeBonus = 10.0f;
+
+	public bool ColorAllFilled = true;
+	public string FilledColor = "white";
+
+	public float SpeedHintsRatio = 0.0f;
 }
