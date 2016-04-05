@@ -363,7 +363,7 @@ public class Writer : Singleton<Writer> {
 	void Update () {
 		if (GameManager.GameState == GameState.GameOver) {
 			if (Input.GetKeyDown(KeyCode.Space)) {
-				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+				SceneManager.LoadScene(0);
 			}
 
 			return;

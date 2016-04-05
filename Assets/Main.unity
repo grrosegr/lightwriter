@@ -413,7 +413,7 @@ MonoBehaviour:
   SwitchProbability: 0.85
   MinTime: 10
   MaxTime: 9999
-  TimePerChar: 0.16
+  TimePerChar: 0.15
   Tick: 1
   LevelChangeWait: 1
   MaxLongQuoteLength: 500
@@ -1217,7 +1217,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 12800000, guid: aefa45df14fe6489d9b1984ab3db8d53, type: 3}
+    m_Font: {fileID: 12800000, guid: ce0df507cdede415489ddd393cf58a82, type: 3}
     m_FontSize: 87
     m_FontStyle: 0
     m_BestFit: 1
