@@ -254,6 +254,7 @@ public class Writer : Singleton<Writer> {
 	bool quoteFailed;
 	float continueAfterFailingTime;
 	public void FailQuote() {
+		LettersRemaining = 0;
 		pressSpace.enabled = true;
 		quoteFailed = true;
 		incorrectQuotes += 1;
@@ -391,6 +392,7 @@ public class Writer : Singleton<Writer> {
 				Countdown.Instance.Paused = true;
 				myAudio.PlayOneShot(AssetHolder.Instance.Win);
 				correctQuotes += 1;
+				LettersRemaining = 0;
 				
 				fastMusic.Pause();
 				slowMusic.Pause();
